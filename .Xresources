@@ -1,0 +1,65 @@
+! Font
+XTerm*faceName: Ubuntu Mono:style=Regular
+XTerm*faceSize: 13
+
+! Force UTF
+XTerm.vt100.locale: false
+XTerm.vt100.utf8: true
+
+! Make 'Alt' key behave as on other terminal emulators
+XTerm.vt100.metaSendsEscape: true
+
+! Fix the backspace key
+XTerm.vt100.backarrowKey: false
+XTerm.ttyModes: erase ^?
+
+! History lines
+XTerm.vt100.saveLines: 4096
+
+! Scrollbar
+XTerm.vt100.scrollBar: true
+XTerm.vt100.scrollbar.width: 8
+
+! Keybinds
+XTerm*VT100.Translations: #override \
+    Ctrl <Key> plus:           larger-vt-font() \n\
+    Ctrl <Key> minus:          smaller-vt-font()
+
+!Background & foreground
+XTerm*background: #002B36
+XTerm*foreground: #D2D2D2
+XTerm*borderColor: #343434
+
+!Colors
+!-------------------------
+!black
+XTerm*color0: #222222
+XTerm*color8: #454545
+
+!red
+XTerm*color1: #9E5641
+XTerm*color9: #CC896D
+
+!green
+XTerm*color2: #6C7E55
+XTerm*color10: #C4DF90
+
+!yellow
+XTerm*color3: #CAAF2B
+XTerm*color11: #FFE080
+
+!blue
+XTerm*color4: #7FB8D8
+XTerm*color12: #B8DDEA
+
+!magenta
+XTerm*color5: #956D9D
+XTerm*color13: #C18FCB
+
+!cyan
+XTerm*color6: #4c8ea1
+XTerm*color14: #6bc1d0
+
+!white
+XTerm*color7: #808080
+XTerm*color15: #cdcdcd
