@@ -28,17 +28,16 @@ exec --no-startup-id workrave
 exec --no-startup-id dunst
 exec --no-startup-id fcitx5
 exec --no-startup-id clipmenud
+exec --no-startup-id emacs --daemon
 
 # startup
 exec --no-startup-id i3-msg 'workspace 1; exec emacs ~/'
-exec --no-startup-id i3-msg 'workspace 2; exec obsidian'
-exec --no-startup-id i3-msg 'workspace 3; exec firefox'
+exec --no-startup-id i3-msg 'workspace 2; exec firefox'
 exec --no-startup-id i3-msg 'workspace 9; exec discord'
 
 # assign app to workspace
 assign [class="emacs"] $ws1
-assign [class="obsidian"] $ws2
-assign [class="Firefox"] $ws3
+assign [class="Firefox"] $ws2
 assign [class="discord"] $ws9
 
 # The combination of xss-lock, nm-applet and pactl is a popular choice, so
@@ -186,9 +185,10 @@ gaps inner 10
 gaps outer 10
 
 # user keybindings
-bindsym $mod+e exec --no-startup-id xterm -e ranger
+bindsym $mod+e exec --no-startup-id emacsclient -c -a "emacs" ~/
 bindsym $mod+c exec --no-startup-id clipmenu
 bindsym $mod+w exec --no-startup-id tmuxd
+bindsym $mod+p exec --no-startup-id passclip
 bindsym --release $mod+Print exec --no-startup-id import $HOME/img/screenshots/`date +%Y_%m_%d_%I_%M_%S_%p`.png
 
 # resize window (you can also use the mouse for that)

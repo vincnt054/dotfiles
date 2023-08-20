@@ -5,6 +5,7 @@
 alias ls='ls --color=auto'
 alias vim='nvim'
 alias vi='nvim'
+alias emacs='emacsclient -c -a "emacs"'
 alias pass_show='pass show -c'
 alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 parse_git_branch() {
