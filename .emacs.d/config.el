@@ -158,17 +158,18 @@
   :straight t
   :init
   (setq org-roam-v2-ack t)
-  :custom
   (org-roam-directory "~/wiki")
+  :custom
   (setq org-roam-dailies-capture-templates
    '(("d" "default" entry "* %<%H:%M> %?"
 	  :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
-  :bind (("C-c n l" . org-roam-buffer-toggle)
-		 ("C-c n f" . org-roam-node-find)
-		 ("C-c n i" . org-roam-node-insert)
-		 :map org-roam-dailies-map
-		 ("Y" . org-roam-dailies-capture-yesterday)
-		 ("T" . org-roam-dailies-capture-tomorrow))
+  :bind
+  (("C-c n l" . org-roam-buffer-toggle)
+   ("C-c n f" . org-roam-node-find)
+   ("C-c n i" . org-roam-node-insert)
+   :map org-roam-dailies-map
+   ("Y" . org-roam-dailies-capture-yesterday)
+   ("T" . org-roam-dailies-capture-tomorrow))
   :bind-keymap
   ("C-c n d" . org-roam-dailies-map)
   :config
@@ -178,10 +179,17 @@
 ;; org-mode
 (use-package org
   :straight (:type built-in)
+  :init
+  (with-eval-after-load 'org
+    (setq org-directory "~/wiki"))
   :config
-  (setq org-todo-keywords '((sequence "TODO" "WAITING" "|" "DONE" "CANCELLED")))
+  (setq org-todo-keywords '((sequence "TODO" "STARTED" "DOING" "WAITING" "|" "DONE" "CANCELLED")))
   (setq org-log-done 'time)
   (setq org-log-into-drawer t)
+  (setq org-archive-location (concat "daily/"
+									 (format-time-string "%Y-%m-%d")
+									 ".org::"))
+  (setq org-agenda-files '("agenda.org" "inbox.org"))
   :bind
   ("C-c a" . org-agenda))
 
@@ -470,6 +478,13 @@
   :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode)))
+
+(use-package yaml-mode
+  :straight t
+  :config
+  (add-hook 'yaml-mode-hook
+			'(lambda ()
+			   (define-key yaml-mode-map "\C-m" 'newline-and-indent))))
 
 (server-start)
 (provide 'config)
