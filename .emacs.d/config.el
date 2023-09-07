@@ -152,17 +152,13 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 ;;; Use-package
-
 ;; org-roam
 (use-package org-roam
   :straight t
   :init
   (setq org-roam-v2-ack t)
-  (org-roam-directory "~/wiki")
-  :custom
-  (setq org-roam-dailies-capture-templates
-   '(("d" "default" entry "* %<%H:%M> %?"
-	  :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
+  (setq org-roam-directory (file-truename "~/wiki/vault"))
+  (setq org-roam-dailies-directory "daily")
   :bind
   (("C-c n l" . org-roam-buffer-toggle)
    ("C-c n f" . org-roam-node-find)
@@ -173,6 +169,10 @@
   :bind-keymap
   ("C-c n d" . org-roam-dailies-map)
   :config
+  (setq org-roam-dailies-capture-templates
+		`(("d" "default" entry "\n* %<%I:%M %p> %?"
+		   :empty-lines 1
+		   :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
   (require 'org-roam-dailies)
   (org-roam-setup))
 
@@ -181,25 +181,42 @@
   :straight (:type built-in)
   :init
   (with-eval-after-load 'org
-    (setq org-directory "~/wiki"))
+	(setq org-directory (file-truename "~/wiki")))
   :config
-  (setq org-todo-keywords '((sequence "TODO" "STARTED" "DOING" "WAITING" "|" "DONE" "CANCELLED")))
+  (setq org-use-fast-todo-selection 'expert)
+  (setq org-todo-keywords '((sequence "TODO(t)" "DOING(d@/!)" "WAITING(w@/!)" "|" "HALT(h!)" "CANCELLED(c@/!)")
+							(sequence "REPORTED(r)" "BUG(b@/!)" "KNOWN-CAUSE(k@/!)" "|" "FIXED(f@/!)")))
   (setq org-log-done 'time)
   (setq org-log-into-drawer t)
-  (setq org-archive-location (concat "daily/"
+  (setq org-archive-location (concat "vault/daily/"
 									 (format-time-string "%Y-%m-%d")
 									 ".org::"))
-  (setq org-agenda-files '("agenda.org" "inbox.org"))
+
+  (setq org-agenda-custom-commands
+		  `(("A" "Frontrunner" ,org-custom-daily-agenda)))
+  (setq org-agenda-files '("deanima.org" "proletarii.org" "domus.org" "inbox.org"))
   :bind
-  ("C-c a" . org-agenda))
+  ("C-c a" . (lambda () (interactive) (org-agenda nil "A"))))
+
+;; org-bullets
+(use-package org-bullets
+  :straight t
+  :after org
+  :hook
+  (org-mode . org-bullets-mode))
 
 ;; dired
 (use-package dired
   :straight (:type built-in)
-  :commands (dired dired-jump open-in-external-app)
   :bind
-  ("C-x C-j" . dired-jump)
-  :custom ((dired-listing-switches "-agho --group-directories-first")))
+  ("C-c ." . dired-omit-mode)
+  ("C-c o" . xah-open-in-external-app)
+  :custom
+  ((dired-listing-switches "-AXgho --group-directories-first"))
+  :config
+  (setq dired-omit-files "^\\\...+$")
+  :hook
+  (dired-mode . dired-omit-mode))
 
 ;; Async
 (use-package async
@@ -214,7 +231,6 @@
 ;; GCMH
 (use-package gcmh
   :straight t
-  :ensure t
   :init
   (setq gcmh-idle-delay 15
 		gcmh-high-cons-threshold (* 16 1024 1024))
@@ -226,7 +242,6 @@
   :straight t
   :init
   (diminish 'auto-revert-mode)
-  (diminish 'flycheck-mode)
   (diminish 'abbrev-mode)
   (diminish 'subword-mode)
   (diminish 'visual-line-mode)
@@ -235,20 +250,19 @@
   (diminish 'eldoc-mode)
   :config
   (with-eval-after-load "undo-tree" (diminish 'undo-tree-mode))
-  (eval-after-load "evil-collection-unimpaired-mode" '(diminish 'evil-collection-unimpaired-mode))
-  (eval-after-load "c-mode" '(diminish 'c-mode))
-  (eval-after-load "c++-mode" '(diminish 'c++-mode))
-  (eval-after-load "which-key" '(diminish 'which-key-mode))
-  (eval-after-load "outline" '(diminish 'outline-minor-mode))
-  (eval-after-load "dired" '(diminish 'dired-async-mode))
-  (eval-after-load "dired" '(diminish 'dired-hide-dotfiles-mode))
-  (eval-after-load "dired" '(diminish 'all-the-icons-dired-mode))
-  (eval-after-load "magit" '(diminish 'auto-fill-mode))
-  (eval-after-load "magit" '(diminish 'with-editor-mode))
-  (eval-after-load "auto-revert-mode" '(diminish 'auto-revert-mode)))
+  (with-eval-after-load "org-agenda-mode" (diminish 'flycheck-mode))
+  (with-eval-after-load "evil-collection-unimpaired-mode" '(diminish 'evil-collection-unimpaired-mode))
+  (with-eval-after-load "c-mode" (diminish 'c-mode))
+  (with-eval-after-load "c++-mode" (diminish 'c++-mode))
+  (with-eval-after-load "which-key" (diminish 'which-key-mode))
+  (with-eval-after-load "outline" (diminish 'outline-minor-mode))
+  (with-eval-after-load "dired" (mapc 'diminish '(dired-async-mode dired-omit-mode)))
+  (with-eval-after-load "magit" (mapc 'diminish '(auto-fill-mode with-editor-mode)))
+  (with-eval-after-load "auto-revert-mode" (diminish 'auto-revert-mode)))
 
 ;; Emacs adjustment to completion
 (use-package emacs
+  :straight (:type built-in)
   :init
   (defun crm-indicator (args)
 	(cons (concat "[CRM] " (car args)) (cdr args)))
@@ -263,13 +277,25 @@
   (setq read-file-name-completion-ignore-case t)
   (setq resize-mini-windows t)
   :config
-  (load-theme 'solarized-dark t)
-  (add-hook 'before-save-hook 'delete-trailing-whitespace))
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+  (setq trash-directory "~/.trash")
+  (setq delete-by-moving-to-trash t))
+
+;; doom modeline
+(use-package doom-modeline
+  :straight t
+  :init
+  (doom-modeline-mode 1))
+
+;; nerd icons
+(use-package nerd-icons
+  :straight t)
 
 ;; Rainbow-delimiters
 (use-package rainbow-delimiters
   :straight t
-  :hook (prog-mode . rainbow-delimiters-mode))
+  :hook
+  (prog-mode . rainbow-delimiters-mode))
 
 ;; so-long
 (use-package so-long
@@ -279,12 +305,12 @@
   (:map so-long-mode-map
 		("C-s" . isearch-forward)
 		("C-r" . isearch-backward))
-  :config (global-so-long-mode 1))
+  :config
+  (global-so-long-mode 1))
 
 ;; undo-tree
 (use-package undo-tree
   :straight t
-  :ensure t
   :config
   (global-undo-tree-mode)
   (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
@@ -292,7 +318,6 @@
 ;; evil-collection
 (use-package evil-collection
   :straight t
-  :ensure t
   :after evil
   :diminish evil-collection-unimpaired-mode
   :init
@@ -300,8 +325,8 @@
 
 ;; evil-mode
 (use-package evil
-  :straight t
   :defer nil
+  :straight t
   :init
   (setq evil-want-keybinding nil)
   (setq evil-want-C-u-scroll t)
@@ -328,13 +353,16 @@
 ;; flycheck
 (use-package flycheck
   :straight t
-  :init (global-flycheck-mode)
-  :hook (prog-mode . flycheck-mode))
+  :hook
+  (go-mode . flycheck-mode)
+  (emacs-lisp-mode . flycheck-mode)
+  (dockerfile-mode . flycheck-mode)
+  (shell-mode . flycheck-mode)
+  (yaml-mode . flycheck-mode))
 
 ;; magit
 (use-package magit
-  :straight t
-  :ensure t)
+  :straight t)
 
 ;; which-key
 (use-package which-key
@@ -361,16 +389,17 @@
 (use-package corfu
   :straight t
   :demand t
-  :bind (:map corfu-map
-			  ("<escape>". corfu-quit)
-			  ("<return>" . corfu-insert)
-			  ("C-h" . corfu-show-documentation)
-			  ("M-l" . 'corfu-show-location)
-			  ("RET" . nil)
-			  ("TAB" . corfu-next)
-			  ([tab] . corfu-next)
-			  ("S-TAB" . corfu-previous)
-			  ([backtab] . corfu-previous))
+  :bind
+  (:map corfu-map
+		("<escape>". corfu-quit)
+		("<return>" . corfu-insert)
+		("C-h" . corfu-show-documentation)
+		("M-l" . 'corfu-show-location)
+		("RET" . nil)
+		("TAB" . corfu-next)
+		([tab] . corfu-next)
+		("S-TAB" . corfu-previous)
+		([backtab] . corfu-previous))
   :custom
   (corfu-auto t)
   (corfu-auto-prefix 3)
@@ -379,7 +408,8 @@
   (corfu-preview-current nil)
   (corfu-quit-no-match 'separator)
   (corfu-separator ?\s)
-  :init (global-corfu-mode)
+  :init
+  (global-corfu-mode)
   :config
   (defun contrib/corfu-enable-always-in-minibuffer ()
 	(unless (bound-and-true-p vertico--input)
@@ -389,10 +419,11 @@
 ;; cape
 (use-package cape
   :straight t
-  :bind (("C-c p p" . completion-at-point)
-		 ("C-c p d" . cape-dabbrev)
-		 ("C-c p f" . cape-file)
-		 ("C-c p s" . cape-symbol))
+  :bind
+  (("C-c p p" . completion-at-point)
+   ("C-c p d" . cape-dabbrev)
+   ("C-c p f" . cape-file)
+   ("C-c p s" . cape-symbol))
   :config
   (setq cape-dabbrev-min-length 3)
   (dolist (backend '( cape-symbol cape-keyword cape-file cape-dabbrev))
@@ -401,13 +432,13 @@
 ;; vertico
 (use-package vertico
   :straight (:files (:defaults "extensions/*"))
-  :ensure t
-  :bind (:map vertico-map
-			  ("C-j" . vertico-next)
-			  ("C-k" . vertico-previous)
-			  ("C-f" . vertico-exit)
-			  :map minibuffer-local-map
-			  ("M-h" . backward-kill-word))
+  :bind
+  (:map vertico-map
+		("C-j" . vertico-next)
+		("C-k" . vertico-previous)
+		("C-f" . vertico-exit)
+		:map minibuffer-local-map
+		("M-h" . backward-kill-word))
   :custom
   (vertico-cycle t)
   (vertico-resize t)
@@ -416,15 +447,17 @@
   :config
   (vertico-mouse-mode))
 
+;; vertico-directory
 (use-package vertico-directory
   :straight nil
   :load-path "straight/repos/vertico/extensions"
   :after vertico
   :ensure nil
-  :bind (:map vertico-map
-			  ("RET" . vertico-directory-enter)
-			  ("DEL" . vertico-directory-delete-char)
-			  ("M-DEL" . vertico-directory-delete-word)))
+  :bind
+  (:map vertico-map
+		("RET" . vertico-directory-enter)
+		("DEL" . vertico-directory-delete-char)
+		("M-DEL" . vertico-directory-delete-word)))
 
 ;; marginalia
 (use-package marginalia
@@ -436,7 +469,6 @@
 ;; Vterm
 (use-package vterm
   :straight t
-  :ensure t
   :config
   (define-key vterm-mode-map (kbd "<f1>") nil)
   (define-key vterm-mode-map (kbd "<f2>") nil)
@@ -455,37 +487,42 @@
   :hook
   (vterm-mode . goto-address-mode))
 
+;; vterm-toggle
 (use-package vterm-toggle
   :straight t
   :config
-  ;; show vterm buffer in side window
+  (setq vterm-toggle-cd-auto-create-buffer nil)
+  (setq vterm-toggle-fullscreen-p nil)
   (add-to-list 'display-buffer-alist
-               '((lambda(bufname _) (with-current-buffer bufname (equal major-mode 'vterm-mode)))
-                 (display-buffer-reuse-window display-buffer-in-side-window)
-                 (side . bottom)
-                 (dedicated . t)
-                 ;; (reusable-frames . visible)
-                 (window-height . 0.3)))
+			   '((lambda (buffer-or-name _)
+				   (let ((buffer (get-buffer buffer-or-name)))
+					 (with-current-buffer buffer
+					   (or (equal major-mode 'vterm-mode)
+						   (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
+				 (display-buffer-reuse-window display-buffer-at-bottom)
+				 (reusable-frames . visible)
+				 (window-height . 0.3)))
   :bind
   ("C-c t" . vterm-toggle)
-  ("C-c i" . (lambda ()
-			   (interactive)
-			   (vterm-toggle-cd)
-			   (vterm-toggle-insert-cd))))
+  ("C-c i" . vterm-toggle-cd-buffer))
 
+;; go-mode
 (use-package go-mode
   :straight t
-  :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode)))
 
+;; docker-mode
+(use-package dockerfile-mode
+  :straight t)
+
+;; yaml-mode
 (use-package yaml-mode
   :straight t
   :config
   (add-hook 'yaml-mode-hook
-			'(lambda ()
+			#'(lambda ()
 			   (define-key yaml-mode-map "\C-m" 'newline-and-indent))))
 
-(server-start)
 (provide 'config)
 ;;; config.el ends here
