@@ -3,6 +3,10 @@
 ;;; Commentary:
 
 ;;; Code:
+(defun org-custom-agenda()
+	(interactive)
+	(org-agenda nil "A"))
+
 (defvar org-custom-daily-agenda
   `(
     (agenda "" ((org-agenda-span 1)
@@ -30,5 +34,5 @@
 				(org-agenda-overriding-header "Backlog")))
 	))
 
-(provide 'agenda-org)
-;;; agenda-org.el ends here
+(provide 'org-agenda-ext)
+;;; org-agenda-ext.el ends here

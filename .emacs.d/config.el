@@ -94,9 +94,9 @@
 (setq c-default-style "linux")
 (setq c-basic-offset tab-width)
 
+;; Global Modes
 (global-subword-mode 1)
-(add-hook 'c-mode-common-hook
-		  (lambda () (subword-mode 1)))
+(minions-mode 1)
 
 ;; Fill-column
 (setq-default fill-column 80)
@@ -128,7 +128,9 @@
 (delete-selection-mode 1)
 
 ;; Fringe
-(fringe-mode nil) ;; Default fringe-mode.
+(fringe-mode nil)
+
+;; Default fringe-mode.
 (setq-default fringes-outside-margins nil)
 (setq-default indicate-buffer-boundaries nil)
 (setq-default indicate-empty-lines nil)
@@ -141,6 +143,7 @@
 (global-hl-line-mode nil)
 
 ;; Line-numbers-mode
+(setq display-line-numbers 'relative)
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'text-mode-hook 'display-line-numbers-mode)
 
@@ -151,114 +154,10 @@
 ;; Aliases
 (defalias 'yes-or-no-p 'y-or-n-p)
 
+;; require
+(require 'compile)
+
 ;;; Use-package
-;; org-roam
-(use-package org-roam
-  :straight t
-  :init
-  (setq org-roam-v2-ack t)
-  (setq org-roam-directory (file-truename "~/wiki/vault"))
-  (setq org-roam-dailies-directory "daily")
-  :bind
-  (("C-c n l" . org-roam-buffer-toggle)
-   ("C-c n f" . org-roam-node-find)
-   ("C-c n i" . org-roam-node-insert)
-   :map org-roam-dailies-map
-   ("Y" . org-roam-dailies-capture-yesterday)
-   ("T" . org-roam-dailies-capture-tomorrow))
-  :bind-keymap
-  ("C-c n d" . org-roam-dailies-map)
-  :config
-  (setq org-roam-dailies-capture-templates
-		`(("d" "default" entry "\n* %<%I:%M %p> %?"
-		   :empty-lines 1
-		   :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
-  (require 'org-roam-dailies)
-  (org-roam-setup))
-
-;; org-mode
-(use-package org
-  :straight (:type built-in)
-  :init
-  (with-eval-after-load 'org
-	(setq org-directory (file-truename "~/wiki")))
-  :config
-  (setq org-use-fast-todo-selection 'expert)
-  (setq org-todo-keywords '((sequence "TODO(t)" "DOING(d@/!)" "WAITING(w@/!)" "|" "HALT(h!)" "CANCELLED(c@/!)")
-							(sequence "REPORTED(r)" "BUG(b@/!)" "KNOWN-CAUSE(k@/!)" "|" "FIXED(f@/!)")))
-  (setq org-log-done 'time)
-  (setq org-log-into-drawer t)
-  (setq org-archive-location (concat "vault/daily/"
-									 (format-time-string "%Y-%m-%d")
-									 ".org::"))
-
-  (setq org-agenda-custom-commands
-		  `(("A" "Frontrunner" ,org-custom-daily-agenda)))
-  (setq org-agenda-files '("deanima.org" "proletarii.org" "domus.org" "inbox.org"))
-  :bind
-  ("C-c a" . (lambda () (interactive) (org-agenda nil "A"))))
-
-;; org-bullets
-(use-package org-bullets
-  :straight t
-  :after org
-  :hook
-  (org-mode . org-bullets-mode))
-
-;; dired
-(use-package dired
-  :straight (:type built-in)
-  :bind
-  ("C-c ." . dired-omit-mode)
-  ("C-c o" . xah-open-in-external-app)
-  :custom
-  ((dired-listing-switches "-AXgho --group-directories-first"))
-  :config
-  (setq dired-omit-files "^\\\...+$")
-  :hook
-  (dired-mode . dired-omit-mode))
-
-;; Async
-(use-package async
-  :straight t
-  :demand t
-  :init
-  (dired-async-mode 1)
-  :config
-  (async-bytecomp-package-mode 1)
-  (add-to-list 'display-buffer-alist '("*Async Shell Command*" display-buffer-no-window (nil))))
-
-;; GCMH
-(use-package gcmh
-  :straight t
-  :init
-  (setq gcmh-idle-delay 15
-		gcmh-high-cons-threshold (* 16 1024 1024))
-  :config
-  (gcmh-mode))
-
-;; Diminish
-(use-package diminish
-  :straight t
-  :init
-  (diminish 'auto-revert-mode)
-  (diminish 'abbrev-mode)
-  (diminish 'subword-mode)
-  (diminish 'visual-line-mode)
-  (diminish 'outline-mode)
-  (diminish 'gcmh-mode)
-  (diminish 'eldoc-mode)
-  :config
-  (with-eval-after-load "undo-tree" (diminish 'undo-tree-mode))
-  (with-eval-after-load "org-agenda-mode" (diminish 'flycheck-mode))
-  (with-eval-after-load "evil-collection-unimpaired-mode" '(diminish 'evil-collection-unimpaired-mode))
-  (with-eval-after-load "c-mode" (diminish 'c-mode))
-  (with-eval-after-load "c++-mode" (diminish 'c++-mode))
-  (with-eval-after-load "which-key" (diminish 'which-key-mode))
-  (with-eval-after-load "outline" (diminish 'outline-minor-mode))
-  (with-eval-after-load "dired" (mapc 'diminish '(dired-async-mode dired-omit-mode)))
-  (with-eval-after-load "magit" (mapc 'diminish '(auto-fill-mode with-editor-mode)))
-  (with-eval-after-load "auto-revert-mode" (diminish 'auto-revert-mode)))
 
 ;; Emacs adjustment to completion
 (use-package emacs
@@ -276,20 +175,122 @@
   (setq completion-ignore-case t)
   (setq read-file-name-completion-ignore-case t)
   (setq resize-mini-windows t)
+  :custom
+  (trash-directory "~/.trash")
+  (delete-by-moving-to-trash t)
+  (compile-command "")
   :config
+  (load-theme 'solarized-dark t)
   (add-hook 'before-save-hook 'delete-trailing-whitespace)
-  (setq trash-directory "~/.trash")
-  (setq delete-by-moving-to-trash t))
+  (global-set-key (kbd "<f1>") 'compile)
+  (global-set-key (kbd "<f2>") 'recompile)
+  :bind
+  (("C-c @ n" . next-error)
+   ("C-c @ p" . previous-error)
+   ("C-c @ N" . compilation-next-error)
+   ("C-c @ P" . compilation-previous-error)
+   ("C-c @ {" . compilation-previous-file)
+   ("C-c @ }" . compilation-next-file)
+   ("C-c @ b" . next-error-select-buffer)))
 
-;; doom modeline
-(use-package doom-modeline
+;; org-mode
+(use-package org
+  :straight (:type built-in)
+  :init
+  (setq org-directory (file-truename "~/wiki"))
+  :custom
+  (org-use-fast-todo-selection 'expert)
+  (org-todo-keywords '((sequence "TODO(t)" "DOING(d@/!)" "WAITING(w@/!)" "|" "HALT(h!)" "CANCELLED(c@/!)")
+					   (sequence "REPORTED(r)" "BUG(b@/!)" "KNOWN-CAUSE(k@/!)" "|" "FIXED(f@/!)")))
+  (org-log-done 'time)
+  (org-log-into-drawer t)
+  (org-archive-location (concat "vault/daily/"
+									 (format-time-string "%Y-%m-%d")
+									 ".org::"))
+  (org-agenda-custom-commands
+   `(("A" "Frontrunner" ,org-custom-daily-agenda)))
+  (org-agenda-files '("deanima.org" "proletarii.org" "domus.org" "inbox.org"))
+  (org-capture-templates
+   '(("t" "Task" entry
+	  (function (lambda ()
+				  (interactive)
+				  (let ((fpath (concat org-directory "/"
+									   (read-answer "File: "
+													'(("deanima" ?d "for my own soul")
+													  ("proletarii" ?p "for my line of work")
+													  ("domus" ?f "for my girlfriend and family")
+													  ("inbox" ?i "for the unknown")))
+									   ".org")))
+					(set-buffer (org-capture-target-buffer fpath)))))
+	  "* %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
+	  :empty-lines-before 1)))
+  :bind
+  ("C-c a" . org-custom-agenda)
+  ("C-c c" . org-capture))
+
+;; org-roam
+(use-package org-roam
+  :straight t
+  :after org
+  :init
+  (setq org-roam-v2-ack t)
+  (setq org-roam-directory (file-truename "~/wiki/vault"))
+  (setq org-roam-dailies-directory "daily")
+  :custom
+  (org-roam-dailies-capture-templates
+   `(("d" "default" entry "\n* %<%I:%M %p> %?"
+	  :empty-lines-before 1
+	  :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
+  :config
+  (require 'org-roam-dailies)
+  (org-roam-setup)
+  :bind-keymap
+  ("C-c n d" . org-roam-dailies-map)
+  :bind
+  (("C-c n l" . org-roam-buffer-toggle)
+   ("C-c n f" . org-roam-node-find)
+   ("C-c n i" . org-roam-node-insert)
+   :map org-roam-dailies-map
+   ("Y" . org-roam-dailies-capture-yesterday)
+   ("T" . org-roam-dailies-capture-tomorrow)))
+
+;; org-bullets
+(use-package org-bullets
+  :straight t
+  :after org
+  :hook
+  (org-mode . org-bullets-mode))
+
+;; dired
+(use-package dired
+  :straight (:type built-in)
+  :custom
+  (dired-listing-switches "-AXgho --group-directories-first")
+  (dired-omit-files "^\\\...+$")
+  :hook
+  (dired-mode . dired-omit-mode)
+  :bind
+  (:map dired-mode-map
+		("C-c ." . dired-omit-mode)
+		("C-c o" . xah-open-in-external-app)))
+
+;; async
+(use-package async
   :straight t
   :init
-  (doom-modeline-mode 1))
+  (dired-async-mode 1)
+  :config
+  (async-bytecomp-package-mode 1)
+  (add-to-list 'display-buffer-alist '("*Async Shell Command*" display-buffer-no-window (nil))))
 
-;; nerd icons
-(use-package nerd-icons
-  :straight t)
+;; GCMH
+(use-package gcmh
+  :straight t
+  :init
+  (setq gcmh-idle-delay 15
+		gcmh-high-cons-threshold (* 16 1024 1024))
+  :config
+  (gcmh-mode))
 
 ;; Rainbow-delimiters
 (use-package rainbow-delimiters
@@ -301,25 +302,25 @@
 (use-package so-long
   :defer t
   :straight t
+  :config
+  (global-so-long-mode 1)
   :bind
   (:map so-long-mode-map
 		("C-s" . isearch-forward)
-		("C-r" . isearch-backward))
-  :config
-  (global-so-long-mode 1))
+		("C-r" . isearch-backward)))
 
 ;; undo-tree
 (use-package undo-tree
   :straight t
+  :custom
+  (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
   :config
-  (global-undo-tree-mode)
-  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
+  (global-undo-tree-mode))
 
 ;; evil-collection
 (use-package evil-collection
   :straight t
   :after evil
-  :diminish evil-collection-unimpaired-mode
   :init
   (evil-collection-init))
 
@@ -329,7 +330,6 @@
   :straight t
   :init
   (setq evil-want-keybinding nil)
-  (setq evil-want-C-u-scroll t)
   :config
   ;; enable evil-mode
   (evil-mode 1)
@@ -370,18 +370,19 @@
   :init
   (which-key-mode)
   :config
-  (setq which-key-idle-dely 0.3))
+  (setq which-key-popup-type 'minibuffer)
+  (setq which-key-idle-dely 0.5))
 
 ;; switch-window
 (use-package switch-window
   :straight t
-  :config
-  (setq switch-window-input-style 'minibuffer)
-  (setq switch-window-increase 4)
-  (setq switch-window-threshold 2)
-  (setq switch-window-shortcut-style 'qwerty)
-  (setq switch-window-qwerty-shortcuts
-		'("a" "s" "d" "f" "j" "k" "l"))
+  :custom
+  (switch-window-input-style 'minibuffer)
+  (switch-window-increase 4)
+  (switch-window-threshold 2)
+  (switch-window-shortcut-style 'qwerty)
+  (switch-window-qwerty-shortcuts
+   '("a" "s" "d" "f" "j" "k" "l"))
   :bind
   ("C-x o" . switch-window))
 
@@ -389,6 +390,21 @@
 (use-package corfu
   :straight t
   :demand t
+  :init
+  (global-corfu-mode)
+  :custom
+  (corfu-auto t)
+  (corfu-auto-prefix 3)
+  (corfu-auto-delay 0)
+  (corfu-echo-documentation 0)
+  (corfu-preview-current nil)
+  (corfu-quit-no-match 'separator)
+  (corfu-separator ?\s)
+  :config
+  (defun contrib/corfu-enable-always-in-minibuffer ()
+	(unless (bound-and-true-p vertico--input)
+	  (corfu-mode 1)))
+  (add-hook 'minibuffer-setup-hook #'contrib/corfu-enable-always-in-minibuffer 1)
   :bind
   (:map corfu-map
 		("<escape>". corfu-quit)
@@ -399,53 +415,39 @@
 		("TAB" . corfu-next)
 		([tab] . corfu-next)
 		("S-TAB" . corfu-previous)
-		([backtab] . corfu-previous))
-  :custom
-  (corfu-auto t)
-  (corfu-auto-prefix 3)
-  (corfu-auto-delay 0)
-  (corfu-echo-documentation 0)
-  (corfu-preview-current nil)
-  (corfu-quit-no-match 'separator)
-  (corfu-separator ?\s)
-  :init
-  (global-corfu-mode)
-  :config
-  (defun contrib/corfu-enable-always-in-minibuffer ()
-	(unless (bound-and-true-p vertico--input)
-	  (corfu-mode 1)))
-  (add-hook 'minibuffer-setup-hook #'contrib/corfu-enable-always-in-minibuffer 1))
+		([backtab] . corfu-previous)))
 
 ;; cape
 (use-package cape
   :straight t
+  :custom
+  (cape-dabbrev-min-length 3)
+  :config
+  (dolist (backend '( cape-symbol cape-keyword cape-file cape-dabbrev))
+	(add-to-list 'completion-at-point-functions backend))
   :bind
   (("C-c p p" . completion-at-point)
    ("C-c p d" . cape-dabbrev)
    ("C-c p f" . cape-file)
-   ("C-c p s" . cape-symbol))
-  :config
-  (setq cape-dabbrev-min-length 3)
-  (dolist (backend '( cape-symbol cape-keyword cape-file cape-dabbrev))
-	(add-to-list 'completion-at-point-functions backend)))
+   ("C-c p s" . cape-symbol)))
 
 ;; vertico
 (use-package vertico
   :straight (:files (:defaults "extensions/*"))
+  :init
+  (vertico-mode)
+  :custom
+  (vertico-cycle t)
+  (vertico-resize t)
+  :config
+  (vertico-mouse-mode)
   :bind
   (:map vertico-map
 		("C-j" . vertico-next)
 		("C-k" . vertico-previous)
 		("C-f" . vertico-exit)
 		:map minibuffer-local-map
-		("M-h" . backward-kill-word))
-  :custom
-  (vertico-cycle t)
-  (vertico-resize t)
-  :init
-  (vertico-mode)
-  :config
-  (vertico-mouse-mode))
+		("M-h" . backward-kill-word)))
 
 ;; vertico-directory
 (use-package vertico-directory
@@ -469,6 +471,8 @@
 ;; Vterm
 (use-package vterm
   :straight t
+  :custom
+  (vterm-shell "bash" "Set to bash instead of the default $SHELL so that vterm from TRAMP uses bash.")
   :config
   (define-key vterm-mode-map (kbd "<f1>") nil)
   (define-key vterm-mode-map (kbd "<f2>") nil)
@@ -482,17 +486,16 @@
   (define-key vterm-mode-map (kbd "<f10>") nil)
   (define-key vterm-mode-map (kbd "<f11>") nil)
   (define-key vterm-mode-map (kbd "<f12>") nil)
-  :custom
-  (vterm-shell "bash" "Set to bash instead of the default $SHELL so that vterm from TRAMP uses bash.")
   :hook
   (vterm-mode . goto-address-mode))
 
 ;; vterm-toggle
 (use-package vterm-toggle
   :straight t
+  :custom
+  (vterm-toggle-cd-auto-create-buffer nil)
+  (vterm-toggle-fullscreen-p nil)
   :config
-  (setq vterm-toggle-cd-auto-create-buffer nil)
-  (setq vterm-toggle-fullscreen-p nil)
   (add-to-list 'display-buffer-alist
 			   '((lambda (buffer-or-name _)
 				   (let ((buffer (get-buffer buffer-or-name)))
@@ -506,11 +509,40 @@
   ("C-c t" . vterm-toggle)
   ("C-c i" . vterm-toggle-cd-buffer))
 
+;; cc-mode
+(use-package cc-mode
+  :hook
+  (c-mode . (lambda ()
+			  (if (file-exists-p "Makefile")
+				  (set (make-local-variable 'compile-command) "make -k")
+				(set (make-local-variable 'compile-command)
+					 ;; emulate make's .c.o implicit pattern rule, but with
+					 ;; different defaults for the CC, CPPFLAGS, and CFLAGS
+					 ;; variables:
+					 ;; $(CC) -c -o $@ $(CPPFLAGS) $(CFLAGS) $<
+					 (let ((file (file-name-nondirectory buffer-file-name)))
+					   (format "%s -c -o %s.o %s %s %s"
+							   (or (getenv "CC") "gcc")
+							   (file-name-sans-extension file)
+							   (or (getenv "CPPFLAGS") "-DDEBUG=9")
+							   (or (getenv "CFLAGS") "-ansi -pedantic -Wall -g")
+							   file))))))
+  :bind
+  (:map c-mode-map
+		("<f1>" . compile)))
+
 ;; go-mode
 (use-package go-mode
   :straight t
+  :mode "\\.go\\'"
   :config
-  (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode)))
+  (add-hook 'go-mode-hook
+			(lambda ()
+			  (if (file-exists-p "Makefile")
+				  (set (make-local-variable 'compile-command) "make -k")
+				(set (make-local-variable 'compile-command)
+					 ;; /usr/bin/go test $@
+					 "/usr/bin/go test ./...")))))
 
 ;; docker-mode
 (use-package dockerfile-mode
@@ -519,10 +551,9 @@
 ;; yaml-mode
 (use-package yaml-mode
   :straight t
-  :config
-  (add-hook 'yaml-mode-hook
-			#'(lambda ()
-			   (define-key yaml-mode-map "\C-m" 'newline-and-indent))))
+  :hook
+  (yaml-mode . (lambda ()
+				(define-key yaml-mode-map "\C-m" 'newline-and-indent))))
 
 (provide 'config)
 ;;; config.el ends here

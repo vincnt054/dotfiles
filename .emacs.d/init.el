@@ -58,13 +58,14 @@
 				(let ((custom-package-file (concat user-emacs-directory "external/" f "\.el")))
 				(when (file-readable-p custom-package-file)
 				  (load-file custom-package-file))))))
-	(mapc load '("xah" "vterm-ext" "agenda-org"))))
+	(mapc load '("xah" "vterm-ext" "org-agenda-ext"))))
 
 ;; Load base configuration
 (when (file-readable-p
        (concat user-emacs-directory "config.el"))
   (load-file
    (concat user-emacs-directory "config.el")))
+
 ;; Garbage collect
 (garbage-collect)
 

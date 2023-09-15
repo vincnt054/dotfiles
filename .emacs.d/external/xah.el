@@ -25,10 +25,7 @@
              (message "%s" x)
              (apply 'start-process (append (list "xah open in external app" xoutBuf) xcmdlist (list (format "'%s'" (if (string-match "'" x) (replace-match "`'" t t x) x))) nil)))
            xfileList)
-          ;; (switch-to-buffer-other-window xoutBuf)
           )
-        ;; old code. calling shell. also have a bug if filename contain apostrophe
-        ;; (mapc (lambda (xfpath) (shell-command (concat "PowerShell -Command \"Invoke-Item -LiteralPath\" " "'" (shell-quote-argument (expand-file-name xfpath)) "'"))) xfileList)
         )
        ((string-equal system-type "darwin")
         (mapc (lambda (xfpath) (shell-command (concat "open " (shell-quote-argument xfpath)))) xfileList))
