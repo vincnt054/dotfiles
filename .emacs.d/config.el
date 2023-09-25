@@ -143,7 +143,6 @@
 (global-hl-line-mode nil)
 
 ;; Line-numbers-mode
-(setq display-line-numbers 'relative)
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'text-mode-hook 'display-line-numbers-mode)
 
@@ -198,21 +197,57 @@
   :straight (:type built-in)
   :init
   (setq org-directory (file-truename "~/wiki"))
+  (when (file-readable-p
+		 (concat user-emacs-directory "external/org-agenda-ext.el"))
+	(load-file
+	 (concat user-emacs-directory "external/org-agenda-ext.el")))
   :custom
   (org-use-fast-todo-selection 'expert)
-  (org-todo-keywords '((sequence "TODO(t)" "DOING(d@/!)" "WAITING(w@/!)" "|" "HALT(h!)" "CANCELLED(c@/!)")
+  (org-todo-keywords '((sequence "TODO(t)" "DOING(d@/!)" "WAITING(w@/!)" "|" "HALT(h@/!)" "CANCELLED(c@/!)")
 					   (sequence "REPORTED(r)" "BUG(b@/!)" "KNOWN-CAUSE(k@/!)" "|" "FIXED(f@/!)")))
   (org-log-done 'time)
   (org-log-into-drawer t)
-  (org-archive-location (concat "vault/daily/"
-									 (format-time-string "%Y-%m-%d")
-									 ".org::"))
+  (org-archive-location (file-truename (concat org-directory
+											   "/vault/daily/"
+											   (format-time-string "%Y-%m-%d")
+											   ".org::")))
   (org-agenda-custom-commands
    `(("A" "Frontrunner" ,org-custom-daily-agenda)))
-  (org-agenda-files '("deanima.org" "proletarii.org" "domus.org" "inbox.org"))
+  (org-agenda-files '("deanima.org" "proletarii.org" "domus.org" "inbox.org" "hexis.org"))
   (org-capture-templates
    '(("t" "Task" entry
-	  (function (lambda ()
+	  (function
+	   (lambda ()
+		 (interactive)
+		 (let ((fpath (concat org-directory "/"
+							  (read-answer "File: "
+										   '(("deanima" ?d "for my own soul")
+											 ("proletarii" ?p "for my line of work")
+											 ("domus" ?f "for my girlfriend and family")
+											 ("inbox" ?i "for the unknown")))
+							  ".org")))
+		   (set-buffer (org-capture-target-buffer fpath))))
+	   )
+	  "* TODO %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
+	  :empty-lines-before 1)
+	 ("r" "Report" entry
+	  (function
+	   (lambda ()
+		 (interactive)
+		 (let ((fpath (concat org-directory "/"
+							  (read-answer "File: "
+										   '(("deanima" ?d "for my own soul")
+											 ("proletarii" ?p "for my line of work")
+											 ("domus" ?f "for my girlfriend and family")
+											 ("inbox" ?i "for the unknown")))
+							  ".org")))
+		   (set-buffer (org-capture-target-buffer fpath))))
+	   )
+	  "* REPORTED %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
+	  :empty-lines-before 1)
+	 ("b" "Bug" entry
+	  (function
+	   (lambda ()
 				  (interactive)
 				  (let ((fpath (concat org-directory "/"
 									   (read-answer "File: "
@@ -221,8 +256,9 @@
 													  ("domus" ?f "for my girlfriend and family")
 													  ("inbox" ?i "for the unknown")))
 									   ".org")))
-					(set-buffer (org-capture-target-buffer fpath)))))
-	  "* %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
+					(set-buffer (org-capture-target-buffer fpath))))
+	   )
+	  "* BUG %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
 	  :empty-lines-before 1)))
   :bind
   ("C-c a" . org-custom-agenda)
@@ -243,7 +279,7 @@
 	  :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
   :config
   (require 'org-roam-dailies)
-  (org-roam-setup)
+  (org-roam-db-autosync-mode)
   :bind-keymap
   ("C-c n d" . org-roam-dailies-map)
   :bind
@@ -274,6 +310,11 @@
 		("C-c ." . dired-omit-mode)
 		("C-c o" . xah-open-in-external-app)))
 
+;; deagrep
+(use-package deadgrep
+  :straight t
+  :bind
+  (("<f5>" . deadgrep)))
 ;; async
 (use-package async
   :straight t
@@ -340,10 +381,6 @@
   (evil-set-initial-state 'vterm-mode 'insert)
   ;; normal
   (evil-set-initial-state 'messages-buffer-mode 'normal)
-  ;; emacs
-  (evil-set-initial-state 'term-mode 'emacs)
-  (evil-set-initial-state 'eshell-mode 'emacs)
-  (evil-set-initial-state 'inferior-scheme-mode 'emacs)
   ;; <tab> cycles org-mode visiblity
   (evil-define-key 'normal org-mode-map (kbd "<tab>") #'org-cycle)
   (evil-set-undo-system 'undo-tree)
@@ -535,14 +572,14 @@
 (use-package go-mode
   :straight t
   :mode "\\.go\\'"
-  :config
-  (add-hook 'go-mode-hook
-			(lambda ()
-			  (if (file-exists-p "Makefile")
-				  (set (make-local-variable 'compile-command) "make -k")
-				(set (make-local-variable 'compile-command)
-					 ;; /usr/bin/go test $@
-					 "/usr/bin/go test ./...")))))
+  :hook
+  (go-mode .
+		   (lambda ()
+			 (if (file-exists-p "Makefile")
+				 (set (make-local-variable 'compile-command) "make -k")
+			   (set (make-local-variable 'compile-command)
+					;; /usr/bin/go test $@
+					"/usr/bin/go test ./...")))))
 
 ;; docker-mode
 (use-package dockerfile-mode
