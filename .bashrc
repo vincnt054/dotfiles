@@ -17,9 +17,9 @@ export GO111MODULE=on
 source /usr/share/fzf/key-bindings.bash
 source /usr/share/fzf/completion.bash
 
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-
 export PATH="$PATH:$HOME/.rvm/bin"
 export LESSHISTFILE=-
 export CLICOLOR=TRUE
+
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
