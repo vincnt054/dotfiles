@@ -1,28 +1,17 @@
 #
 # ~/.bash_profile
 #
-
 [[ -f $HOME/.bashrc ]] && . $HOME/.bashrc
-userresources=$HOME/.Xresources
 
+userresources=$HOME/.Xresources
 if [ -f "$userresources" ]; then
     xrdb -merge "$userresources"
 fi
 
-if [ -d /etc/X11/xinit/xinitrc.d ] ; then
- for f in /etc/X11/xinit/xinitrc.d/?*.sh ; do
-  [ -x "$f" ] && . "$f"
- done
- unset f
-fi
-
-export GEM_HOME="$(ruby -e 'puts Gem.user_dir')"
 export GOPATH=$HOME/go
 export GOBIN=$GOPATH/bin
-export PATH="$PATH:$(go env GOBIN):$(go env GOPATH)/bin:$HOME/.local/bin:$GEM_HOME/bin"
+export PATH="$PATH:$(go env GOBIN):$(go env GOPATH)/bin"
 
-export EDITOR="nvim"
-export VISUAL="nvim"
 export TERM="xterm"
 
 export GTK_IM_MODULE=fcitx
