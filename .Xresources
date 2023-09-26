@@ -20,10 +20,15 @@ XTerm.vt100.saveLines: 4096
 XTerm.vt100.scrollBar: true
 XTerm.vt100.scrollbar.width: 8
 
+! Clipboard
+XTerm.vt100.selectToClipboard: on
+
 ! Keybinds
 XTerm*VT100.Translations: #override \
     Ctrl <Key> plus:           larger-vt-font() \n\
-    Ctrl <Key> minus:          smaller-vt-font()
+    Ctrl <Key> minus:          smaller-vt-font() \n\
+    Ctrl Shift <Key>C: copy-selection(CLIPBOARD) \n\
+    Ctrl Shift <Key>V: insert-selection(CLIPBOARD)
 
 !Background & foreground
 XTerm*background: #002B36
