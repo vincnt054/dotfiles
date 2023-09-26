@@ -1,0 +1,47 @@
+#!/bin/bash
+option="New\nTelnet\nKill"
+
+listSession=$(tmux list-sessions 2> /dev/null)
+
+if [ -z "$listSession" -o "$listSession" == "" ]; then
+    option=$(echo -e "${option}" | dmenu -i -l 3 -p "Tmux sessions:")
+else 
+    option=$(echo -e "${listSession}\n${option}" | dmenu -i -l 3 -p "Tmux sessions:")
+fi
+
+case "$option" in 
+    "")
+        ;;
+    New) 
+        session=$(echo "" | dmenu -p "New session:")
+        if [ ! -z "$session" -a "$session" != "" ]; then 
+            xterm -e "tmux new -s $session"
+        fi 
+        ;;
+    Telnet)
+        session=$(echo "" | dmenu -p "Telnet session:")
+
+        if [ ! -z "$session" -a "$session" != "" ]; then 
+            host=$(echo "localhost" | dmenu -p "Host:")
+            port=$(echo "" | dmenu -p "Port:")
+            if [ ! -z "$host" -a "$host" != "" ] && [ ! -z "$port" -a "$port" ]; then
+                cmd="telnet $host $port"
+                xterm -e "tmux new -s $session $cmd"
+            fi
+        fi 
+        ;;
+    Kill)
+        if [ ! -z "$listSession" -a "$listSession" != "" ]; then
+            session=$(echo "$listSession" | dmenu -i -l 3 -p "Kill session:")
+            if [ ! -z "$session" -a "$session" != "" ]; then 
+                session=$(cut -d ' ' -f1 <<< $session | tr -d ":")
+                tmux kill-session -t $session
+            fi
+        fi
+        ;;
+    *)
+        session=$(cut -d ' ' -f1 <<< $option | tr -d ":")
+        if [ ! -z "$session" -a "$session" != "" ]; then
+            xterm -e "tmux a -t $session"
+        fi ;;
+esac
