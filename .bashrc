@@ -17,6 +17,8 @@ export CLICOLOR=TRUE
 
 export GO111MODULE=on
 
+export PASSWORD_STORE_X_SELECTION=primary
+
 source /usr/share/fzf/key-bindings.bash
 source /usr/share/fzf/completion.bash
 

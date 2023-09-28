@@ -24,6 +24,7 @@ font pango:Ubuntu Mono 8
 #exec --no-startup-id dex --autostart --environment i3
 exec --no-startup-id feh --randomize --bg-fill $HOME/img/wallpaper
 exec --no-startup-id dunst
+exec --no-startup-id nm-applet
 
 # startup
 exec --no-startup-id i3-msg 'workspace 1; exec emacs ~/'
