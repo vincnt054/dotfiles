@@ -358,16 +358,8 @@
   :config
   (global-undo-tree-mode))
 
-;; evil-collection
-(use-package evil-collection
-  :straight t
-  :after evil
-  :init
-  (evil-collection-init))
-
 ;; evil-mode
 (use-package evil
-  :defer nil
   :straight t
   :init
   (setq evil-want-keybinding nil)
@@ -383,9 +375,13 @@
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   ;; <tab> cycles org-mode visiblity
   (evil-define-key 'normal org-mode-map (kbd "<tab>") #'org-cycle)
-  (evil-set-undo-system 'undo-tree)
-  ;; :q kills buffer
-  (evil-ex-define-cmd "q" 'delete-window))
+  (evil-set-undo-system 'undo-tree))
+
+;; evil-collection
+(use-package evil-collection
+  :straight t
+  :config
+  (evil-collection-init))
 
 ;; flycheck
 (use-package flycheck
