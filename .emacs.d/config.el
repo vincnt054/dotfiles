@@ -161,12 +161,6 @@
 (use-package solarized-theme
   :straight t)
 
-;; Solarized Theme
-(use-package minions
-  :straight t
-  :init
-  (minions-mode 1))
-
 ;; Emacs adjustment to completion
 (use-package emacs
   :straight (:type built-in)
@@ -425,6 +419,12 @@
    '("a" "s" "d" "f" "j" "k" "l"))
   :bind
   ("C-x o" . switch-window))
+
+;; Minions
+(use-package minions
+  :straight t
+  :init
+  (minions-mode 1))
 
 ;; Corfu
 (use-package corfu
