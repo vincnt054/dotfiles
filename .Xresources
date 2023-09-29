@@ -21,7 +21,7 @@ XTerm.vt100.scrollBar: true
 XTerm.vt100.scrollbar.width: 8
 
 ! Clipboard
-XTerm.vt100.selectToClipboard: on
+XTerm.vt100.selectToClipboard: PRIMARY
 
 ! Keybinds
 XTerm*VT100.Translations: #override \

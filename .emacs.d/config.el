@@ -96,7 +96,6 @@
 
 ;; Global Modes
 (global-subword-mode 1)
-(minions-mode 1)
 
 ;; Fill-column
 (setq-default fill-column 80)
@@ -157,6 +156,16 @@
 (require 'compile)
 
 ;;; Use-package
+
+;; Solarized Theme
+(use-package solarized-theme
+  :straight t)
+
+;; Solarized Theme
+(use-package minions
+  :straight t
+  :init
+  (minions-mode 1))
 
 ;; Emacs adjustment to completion
 (use-package emacs
@@ -315,6 +324,7 @@
   :straight t
   :bind
   (("<f5>" . deadgrep)))
+
 ;; async
 (use-package async
   :straight t
@@ -387,12 +397,8 @@
 ;; flycheck
 (use-package flycheck
   :straight t
-  :hook
-  (go-mode . flycheck-mode)
-  (emacs-lisp-mode . flycheck-mode)
-  (dockerfile-mode . flycheck-mode)
-  (shell-mode . flycheck-mode)
-  (yaml-mode . flycheck-mode))
+  :init
+  (global-flycheck-mode))
 
 ;; magit
 (use-package magit
@@ -582,7 +588,11 @@
 (use-package dockerfile-mode
   :straight t)
 
-;; yaml-mode
+;; jinja2 -mode
+(use-package jinja2-mode
+  :straight t)
+
+;; yml-mode
 (use-package yaml-mode
   :straight t
   :hook
