@@ -379,6 +379,7 @@
 
 ;; evil-collection
 (use-package evil-collection
+  :after evil
   :straight t
   :config
   (evil-collection-init))
