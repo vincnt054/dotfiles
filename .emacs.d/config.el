@@ -284,15 +284,14 @@
   (dired-mode . dired-omit-mode)
   :bind
   (:map dired-mode-map
+		("C-c $ i" . dired-insert-subdir)
 		("C-c $ a" . dired-hide-all)
 		("C-c $ d" . dired-hide-details-mode)
 		("C-c $ s" . dired-hide-subdir)
-		("C-c i" . dired-insert-subdir)
+		("C-c $ ." . dired-omit-mode)
 		("C-c # l" . dired-kill-line)
 		("C-c # s" . dired-kill-subdir)
-		("C-c # t" . dired-kill-tree)
-		("C-c t" . dired-kill-tree)
-		("C-c ." . dired-omit-mode)))
+		("C-c # t" . dired-kill-tree)))
 
 ;; deagrep
 (use-package deadgrep
