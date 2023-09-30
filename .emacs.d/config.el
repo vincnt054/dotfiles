@@ -213,7 +213,20 @@
   (org-agenda-custom-commands
    `(("A" "Frontrunner" ,vincnt054/org-custom-daily-agenda)))
   (org-agenda-files '("deanima.org" "proletarii.org" "domus.org" "inbox.org" "hexis.org"))
-  (org-capture-templates vincnt054/org-custom-task)
+  (org-capture-templates
+   '(("t" "Task" entry
+	  (function (lambda ()
+				  (interactive)
+				  (let ((fpath (concat org-directory "/"
+									   (read-answer "File: "
+													'(("deanima" ?d "for my own soul")
+													  ("proletarii" ?p "for my line of work")
+													  ("domus" ?f "for my girlfriend and family")
+													  ("inbox" ?i "for the unknown")))
+									   ".org")))
+					(set-buffer (org-capture-target-buffer fpath)))))
+	  "* %^{Task: |TODO|REPORTED|BUG} %?\n:PROPERTIES:\n:CAPTURED: %%U\n:END:"
+	  :empty-lines-before 1)))
   :bind
   ("C-c a" . org-custom-agenda)
   ("C-c c" . org-capture))
