@@ -51,15 +51,6 @@
 ;; Load newer .elc or .el
 (setq load-prefer-newer t)
 
-;; Load external
-(when (file-directory-p
-	(concat user-emacs-directory "external"))
-  (let ((load (lambda (f)
-				(let ((custom-package-file (concat user-emacs-directory "external/" f "\.el")))
-				(when (file-readable-p custom-package-file)
-				  (load-file custom-package-file))))))
-	(mapc load '("xah" "vterm-ext"))))
-
 ;; Load base configuration
 (when (file-readable-p
        (concat user-emacs-directory "config.el"))
@@ -74,5 +65,4 @@
 	  (lambda ()
 	    (setq gc-cons-threshold gc-cons-threshold-original)
 	    (setq gc-cons-percentage gc-cons-percentage-original)))
-
 ;;; init.el ends here

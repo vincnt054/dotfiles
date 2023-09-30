@@ -182,10 +182,11 @@
   :config
   (load-theme 'solarized-dark t)
   (add-hook 'before-save-hook 'delete-trailing-whitespace)
-  (global-set-key (kbd "<f1>") 'compile)
-  (global-set-key (kbd "<f2>") 'recompile)
   :bind
-  (("C-c @ n" . next-error)
+  (("<f1>" . compile)
+   ("<f2>" . recompile)
+   ("C-x C-o" . find-file-other-window)
+   ("C-c @ n" . next-error)
    ("C-c @ p" . previous-error)
    ("C-c @ N" . compilation-next-error)
    ("C-c @ P" . compilation-previous-error)
@@ -270,12 +271,28 @@
   :custom
   (dired-listing-switches "-AXgho --group-directories-first")
   (dired-omit-files "^\\\...+$")
+  (dired-guess-shell-alist-user
+   '(("\\.pdf\\'" "zathura")
+	 ("\\.djvu\\'" "zathura")
+	 ("\\.jpeg\\'" "nsxiv")
+	 ("\\.jpg\\'" "nsxiv")
+	 ("\\.png\\'" "nsxiv")
+	 ("\\.gif\\'" "nsxiv")
+	 ("\\.tex\\'" "pdflatex")
+	 ("\\.html?\\'" "firefox")))
   :hook
   (dired-mode . dired-omit-mode)
   :bind
   (:map dired-mode-map
-		("C-c ." . dired-omit-mode)
-		("C-c C-o" . xah-open-in-external-app)))
+		("C-c $ a" . dired-hide-all)
+		("C-c $ d" . dired-hide-details-mode)
+		("C-c $ s" . dired-hide-subdir)
+		("C-c i" . dired-insert-subdir)
+		("C-c # l" . dired-kill-line)
+		("C-c # s" . dired-kill-subdir)
+		("C-c # t" . dired-kill-tree)
+		("C-c t" . dired-kill-tree)
+		("C-c ." . dired-omit-mode)))
 
 ;; deagrep
 (use-package deadgrep
@@ -475,6 +492,9 @@
 ;; Vterm
 (use-package vterm
   :straight t
+  :init
+  (load-file
+   (concat user-emacs-directory "external/vterm-ext.el"))
   :custom
   (vterm-shell "bash" "Set to bash instead of the default $SHELL so that vterm from TRAMP uses bash.")
   :config
