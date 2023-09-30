@@ -152,9 +152,6 @@
 ;; Aliases
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-;; require
-(require 'compile)
-
 ;;; Use-package
 
 ;; Solarized Theme
@@ -165,6 +162,7 @@
 (use-package emacs
   :straight (:type built-in)
   :init
+  (require 'compile)
   (defun crm-indicator (args)
 	(cons (concat "[CRM] " (car args)) (cdr args)))
   (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
@@ -200,10 +198,8 @@
   :straight (:type built-in)
   :init
   (setq org-directory (file-truename "~/wiki"))
-  (when (file-readable-p
-		 (concat user-emacs-directory "external/org-agenda-ext.el"))
-	(load-file
-	 (concat user-emacs-directory "external/org-agenda-ext.el")))
+  (load-file
+   (concat user-emacs-directory "external/org-agenda-ext.el"))
   :custom
   (org-use-fast-todo-selection 'expert)
   (org-todo-keywords '((sequence "TODO(t)" "DOING(d@/!)" "WAITING(w@/!)" "|" "HALT(h@/!)" "CANCELLED(c@/!)")
@@ -215,54 +211,9 @@
 											   (format-time-string "%Y-%m-%d")
 											   ".org::")))
   (org-agenda-custom-commands
-   `(("A" "Frontrunner" ,org-custom-daily-agenda)))
+   `(("A" "Frontrunner" ,vincnt054/org-custom-daily-agenda)))
   (org-agenda-files '("deanima.org" "proletarii.org" "domus.org" "inbox.org" "hexis.org"))
-  (org-capture-templates
-   '(("t" "Task" entry
-	  (function
-	   (lambda ()
-		 (interactive)
-		 (let ((fpath (concat org-directory "/"
-							  (read-answer "File: "
-										   '(("deanima" ?d "for my own soul")
-											 ("proletarii" ?p "for my line of work")
-											 ("domus" ?f "for my girlfriend and family")
-											 ("inbox" ?i "for the unknown")))
-							  ".org")))
-		   (set-buffer (org-capture-target-buffer fpath))))
-	   )
-	  "* TODO %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
-	  :empty-lines-before 1)
-	 ("r" "Report" entry
-	  (function
-	   (lambda ()
-		 (interactive)
-		 (let ((fpath (concat org-directory "/"
-							  (read-answer "File: "
-										   '(("deanima" ?d "for my own soul")
-											 ("proletarii" ?p "for my line of work")
-											 ("domus" ?f "for my girlfriend and family")
-											 ("inbox" ?i "for the unknown")))
-							  ".org")))
-		   (set-buffer (org-capture-target-buffer fpath))))
-	   )
-	  "* REPORTED %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
-	  :empty-lines-before 1)
-	 ("b" "Bug" entry
-	  (function
-	   (lambda ()
-				  (interactive)
-				  (let ((fpath (concat org-directory "/"
-									   (read-answer "File: "
-													'(("deanima" ?d "for my own soul")
-													  ("proletarii" ?p "for my line of work")
-													  ("domus" ?f "for my girlfriend and family")
-													  ("inbox" ?i "for the unknown")))
-									   ".org")))
-					(set-buffer (org-capture-target-buffer fpath))))
-	   )
-	  "* BUG %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
-	  :empty-lines-before 1)))
+  (org-capture-templates vincnt054/org-custom-task)
   :bind
   ("C-c a" . org-custom-agenda)
   ("C-c c" . org-capture))
@@ -311,7 +262,7 @@
   :bind
   (:map dired-mode-map
 		("C-c ." . dired-omit-mode)
-		("C-c o" . xah-open-in-external-app)))
+		("C-c C-o" . xah-open-in-external-app)))
 
 ;; deagrep
 (use-package deadgrep
@@ -345,8 +296,8 @@
 
 ;; so-long
 (use-package so-long
-  :defer t
   :straight t
+  :defer t
   :config
   (global-so-long-mode 1)
   :bind
@@ -546,8 +497,8 @@
 				 (reusable-frames . visible)
 				 (window-height . 0.3)))
   :bind
-  ("C-c t" . vterm-toggle)
-  ("C-c i" . vterm-toggle-cd-buffer))
+  ("<f11>" . vterm-toggle-cd-buffer)
+  ("<f12>" . vterm-toggle))
 
 ;; cc-mode
 (use-package cc-mode
@@ -590,11 +541,13 @@
 
 ;; jinja2 -mode
 (use-package jinja2-mode
-  :straight t)
+  :straight t
+  :mode "\\.j2\\'")
 
 ;; yml-mode
 (use-package yaml-mode
   :straight t
+  :mode "\\.yml\\'"
   :hook
   (yaml-mode . (lambda ()
 				(define-key yaml-mode-map "\C-m" 'newline-and-indent))))
