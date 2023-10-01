@@ -29,6 +29,7 @@ exec --no-startup-id nm-applet
 # startup
 exec --no-startup-id i3-msg 'workspace 1; exec emacs ~/'
 exec --no-startup-id i3-msg 'workspace 2; exec firefox'
+exec --no-startup-id i3-msg 'workspace 9; exec xterm -e newsboat'
 exec --no-startup-id i3-msg 'workspace 9; exec discord'
 
 # assign app to workspace
@@ -135,9 +136,9 @@ workspace 2 output primary
 workspace 3 output primary
 workspace 4 output primary
 workspace 5 output primary
-workspace 6 output DP-1
-workspace 7 output DP-1
-workspace 8 output DP-1
+workspace 6 output primary
+workspace 7 output primary
+workspace 8 output primary
 workspace 9 output DP-1
 workspace 10 output DP-1
 
@@ -182,6 +183,7 @@ gaps outer 10
 
 # user keybindings
 bindsym $mod+e exec --no-startup-id emacsclient -c -a "emacs" ~/
+bindsym $mod+e exec --no-startup-id xterm -e newsboat
 bindsym $mod+c exec --no-startup-id clipmenu -p "Clipmenu"
 bindsym $mod+w exec --no-startup-id tmuxd
 bindsym $mod+p exec --no-startup-id passclip
