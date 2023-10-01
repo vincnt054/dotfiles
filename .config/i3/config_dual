@@ -182,7 +182,7 @@ gaps outer 10
 
 # user keybindings
 bindsym $mod+e exec --no-startup-id emacsclient -c -a "emacs" ~/
-bindsym $mod+c exec --no-startup-id clipmenu
+bindsym $mod+c exec --no-startup-id clipmenu -p "Clipmenu"
 bindsym $mod+w exec --no-startup-id tmuxd
 bindsym $mod+p exec --no-startup-id passclip
 bindsym --release $mod+Print exec --no-startup-id import $HOME/img/screenshots/`date +%Y_%m_%d_%I_%M_%S_%p`.png

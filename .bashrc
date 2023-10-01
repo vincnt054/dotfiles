@@ -14,15 +14,10 @@ parse_git_branch() {
 export PS1="\[\033[32m\]\w\[\033[33m\]\$(parse_git_branch)\[\033[00m\]\n> "
 export LESSHISTFILE=-
 export CLICOLOR=TRUE
-
+export TERM="xterm"
 export GO111MODULE=on
 
 export PASSWORD_STORE_X_SELECTION=primary
 
 source /usr/share/fzf/key-bindings.bash
 source /usr/share/fzf/completion.bash
-
-export PATH="$PATH:$HOME/.rvm/bin"
-
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
