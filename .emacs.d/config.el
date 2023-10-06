@@ -26,6 +26,7 @@
 
 ;; Default custom file
 (setq-default custom-file (expand-file-name "custom.el" user-emacs-directory))
+
 (unless (file-exists-p custom-file)
   (write-region "" nil custom-file))
 (load custom-file nil t)
@@ -145,9 +146,12 @@
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'text-mode-hook 'display-line-numbers-mode)
 
+(setq display-line-numbers-type 'relative)
+
 ;; Enable visual-line-mode for text buffers & org mode
 (add-hook 'text-mode-hook 'visual-line-mode)
 (add-hook 'org-mode-hook 'visual-line-mode)
+
 
 ;; Aliases
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -207,6 +211,7 @@
 					   (sequence "REPORTED(r)" "BUG(b@/!)" "KNOWN-CAUSE(k@/!)" "|" "FIXED(f@/!)")))
   (org-log-done 'time)
   (org-log-into-drawer t)
+  (org-hide-emphasis-markers t)
   (org-archive-location (file-truename (concat org-directory
 											   "/vault/daily/"
 											   (format-time-string "%Y-%m-%d")
@@ -359,6 +364,7 @@
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   ;; <tab> cycles org-mode visiblity
   (evil-define-key 'normal org-mode-map (kbd "<tab>") #'org-cycle)
+  (evil-define-key 'normal org-mode-map (kbd "RET") #'org-open-at-point)
   (evil-set-undo-system 'undo-tree))
 
 ;; evil-collection
@@ -413,27 +419,34 @@
   :init
   (global-corfu-mode)
   :custom
+  (corfu-cycle t)
   (corfu-auto t)
   (corfu-auto-prefix 3)
   (corfu-auto-delay 0)
-  (corfu-echo-documentation 0)
+  (corfu-echo-documentation 0.25)
   (corfu-preview-current nil)
   (corfu-quit-no-match 'separator)
   (corfu-separator ?\s)
   :config
-  (defun contrib/corfu-enable-always-in-minibuffer ()
-	(unless (bound-and-true-p vertico--input)
+  (defun corfu-enable-always-in-minibuffer ()
+	"Enable Corfu in the minibuffer if Vertico/Mct are not active."
+	(unless (or (bound-and-true-p mct--active)
+				(bound-and-true-p vertico--input)
+				(eq (current-local-map) read-passwd-map))
+	  ;; (setq-local corfu-auto nil) ;; Enable/disable auto completion
+	  (setq-local corfu-echo-delay nil ;; Disable automatic echo and popup
+				  corfu-popupinfo-delay nil)
 	  (corfu-mode 1)))
-  (add-hook 'minibuffer-setup-hook #'contrib/corfu-enable-always-in-minibuffer 1)
+  (add-hook 'minibuffer-setup-hook #'corfu-enable-always-in-minibuffer 1)
   :bind
   (:map corfu-map
 		("<escape>". corfu-quit)
-		("<return>" . corfu-insert)
+		("S-<return>" . corfu-insert)
 		("C-h" . corfu-show-documentation)
 		("M-l" . 'corfu-show-location)
-		("RET" . nil)
 		("TAB" . corfu-next)
 		([tab] . corfu-next)
+		("RET" . nil)
 		("S-TAB" . corfu-previous)
 		([backtab] . corfu-previous)))
 
@@ -443,13 +456,16 @@
   :custom
   (cape-dabbrev-min-length 3)
   :config
-  (dolist (backend '( cape-symbol cape-keyword cape-file cape-dabbrev))
+  (dolist (backend '(cape-symbol cape-keyword cape-file cape-dabbrev))
 	(add-to-list 'completion-at-point-functions backend))
   :bind
   (("C-c p p" . completion-at-point)
    ("C-c p d" . cape-dabbrev)
    ("C-c p f" . cape-file)
    ("C-c p s" . cape-symbol)))
+
+;; eglot
+(use-package eglot)
 
 ;; vertico
 (use-package vertico
@@ -479,6 +495,7 @@
   (:map vertico-map
 		("RET" . vertico-directory-enter)
 		("DEL" . vertico-directory-delete-char)
+		("S-DEL" . vertico-directory-up)
 		("M-DEL" . vertico-directory-delete-word)))
 
 ;; marginalia
