@@ -25,6 +25,7 @@ font pango:Ubuntu Mono 8
 exec --no-startup-id feh --randomize --bg-fill $HOME/img/wallpaper
 exec --no-startup-id dunst
 exec --no-startup-id nm-applet
+exec --no-startup-id clipmenud
 
 # startup
 exec --no-startup-id i3-msg 'workspace 1; exec emacs ~/'
@@ -182,7 +183,7 @@ gaps inner 10
 gaps outer 10
 
 # user keybindings
-bindsym $mod+e exec --no-startup-id emacsclient -c -a "emacs" ~/
+bindsym $mod+e exec --no-startup-id emacsclient -c -a "emacs"
 bindsym $mod+n exec --no-startup-id xterm -e newsboat
 bindsym $mod+c exec --no-startup-id clipmenu -p "Clipmenu"
 bindsym $mod+w exec --no-startup-id tmuxd
