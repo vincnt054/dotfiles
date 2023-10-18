@@ -25,6 +25,7 @@ font pango:Ubuntu Mono 8
 exec --no-startup-id feh --randomize --bg-fill $HOME/img/wallpaper
 exec --no-startup-id dunst
 exec --no-startup-id nm-applet
+exec --no-startup-id volumeicon
 exec --no-startup-id clipmenud
 
 # startup
