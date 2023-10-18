@@ -106,8 +106,12 @@
   (add-to-list 'display-buffer-alist '("*Async Shell Command*" . (display-buffer-no-window . nil)))
   (setq async-shell-command-buffer 'new-buffer))
 
-(map! "<f9>" #'vterm
-      "<f10>" #'magit
+(map! "<f5>" #'consult-ripgrep
+      "<f6>" #'consult-git-grep
+      "<f7>" #'consult-compile-error
+      "<f8>" #'consult-flymake
+      "<f9>" #'magit
+      "<f10>" #'vterm
       "<f11>" #'recompile
       "<f12>" #'compile)
 
