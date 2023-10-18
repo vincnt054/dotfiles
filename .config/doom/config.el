@@ -41,23 +41,27 @@
 (setq trash-directory "~/.trash")
 
 (setq org-directory "~/wiki")
+(setq org-roam-directory "~/wiki/vault")
+
+;; Don't open a new Async Shell Command window
+(add-to-list 'display-buffer-alist '("*Async Shell Command*" . (display-buffer-no-window . nil)))
 
 (after! org
   (use-package! org
     :custom
     (org-use-fast-todo-selection 'expert)
     (org-todo-keywords '((sequence "TODO(t)" "IN PROGRESS(i@/!)" "WAITING(w@/!)" "|" "DONE(d@/!)" "CANCELLED(c@/!)")
-                         (sequence "BUG(b@/!)" "KNOWN-CAUSE(k@/!)" "|" "FIXED(f@/!)" "HACK(h@/!)")))
+                         (sequence "BUG(b)" "KNOWN-CAUSE(k)" "|" "FIXED(f@/!)" "LOOPHOLE(l@/!)")))
     (org-todo-keyword-faces
      '(("TODO" . (:foreground "goldenrod" :weight bold))
        ("IN PROGRESS" . (:foreground "royal blue" :weight bold))
        ("WAITING" . (:foreground "tomato" :weight bold))
        ("DONE" . (:foreground "spring green" :weight bold))
        ("CANCELLED" . (:foreground "slate gray" :weight bold))
-       ("BUG" . (:foreground "dark red" :background "peru" :weight bold))
-       ("KNOWN-CAUSE" . (:foreground "gainsboro" :background "steel blue" :weight bold))
+       ("BUG" . (:foreground "peru" :background "dark red" :weight bold))
+       ("KNOWN-CAUSE" . (:foreground "steel blue" :background "gainsboro" :weight bold))
        ("FIXED" . (:foreground "spring green" :weight bold))
-       ("HACK" . (:foreground "salmon" :weight bold))))
+       ("LOOPHOLE" . (:foreground "salmon" :weight bold))))
     (org-log-done 'time)
     (org-log-into-drawer t)
     (org-hide-emphasis-markers t)
@@ -80,17 +84,16 @@
                       (set-buffer (org-capture-target-buffer fpath)))))
         "* %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
         :empty-lines-before 1))))
-
   (use-package! org-roam
     :init
     (setq org-roam-v2-ack t)
-    (setq org-roam-directory "~/wiki/vault")
     (setq org-roam-dailies-directory "daily")
     :custom
     (org-roam-dailies-capture-templates
      `(("d" "default" entry "\n* %<%I:%M %p> %?"
         :empty-lines-before 1
-        :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))))
+        :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n")))))
+  )
 
 (after! dired-x
   (setq dired-guess-shell-alist-user
@@ -101,12 +104,12 @@
           ("\\.png\\'" "nsxiv")
           ("\\.gif\\'" "nsxiv")
           ("\\.tex\\'" "pdflatex")
-          ("\\.html?\\'" "firefox"))))
+          ("\\.html?\\'" "firefox")))
+  )
 
-
-(set 'async-shell-command-display-buffer nil)
-
-
-(map! "<f12>" #'compile)
+(map! "<f9>" #'vterm
+      "<f10>" #'magit
+      "<f11>" #'recompile
+      "<f12>" #'compile)
 
 ;;; config.el ends here
