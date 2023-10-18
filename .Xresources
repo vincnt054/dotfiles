@@ -1,3 +1,6 @@
+! Term name
+XTerm.termName: xterm-256color
+
 ! Font
 XTerm*faceName: Ubuntu Mono:style=Regular
 XTerm*faceSize: 13
