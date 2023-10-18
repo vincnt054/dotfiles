@@ -43,9 +43,6 @@
 (setq org-directory "~/wiki")
 (setq org-roam-directory "~/wiki/vault")
 
-;; Don't open a new Async Shell Command window
-(add-to-list 'display-buffer-alist '("*Async Shell Command*" . (display-buffer-no-window . nil)))
-
 (after! org
   (use-package! org
     :custom
@@ -92,8 +89,7 @@
     (org-roam-dailies-capture-templates
      `(("d" "default" entry "\n* %<%I:%M %p> %?"
         :empty-lines-before 1
-        :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n")))))
-  )
+        :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))))
 
 (after! dired-x
   (setq dired-guess-shell-alist-user
@@ -104,8 +100,11 @@
           ("\\.png\\'" "nsxiv")
           ("\\.gif\\'" "nsxiv")
           ("\\.tex\\'" "pdflatex")
-          ("\\.html?\\'" "firefox")))
-  )
+          ("\\.html?\\'" "firefox"))))
+
+(after! async
+  (add-to-list 'display-buffer-alist '("*Async Shell Command*" . (display-buffer-no-window . nil)))
+  (setq async-shell-command-buffer 'new-buffer))
 
 (map! "<f9>" #'vterm
       "<f10>" #'magit
