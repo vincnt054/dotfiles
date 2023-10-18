@@ -106,7 +106,8 @@
   (add-to-list 'display-buffer-alist '("*Async Shell Command*" . (display-buffer-no-window . nil)))
   (setq async-shell-command-buffer 'new-buffer))
 
-(map! "<f5>" #'consult-ripgrep
+(map! "C-x C-g" #'find-file-other-window
+      "<f5>" #'consult-ripgrep
       "<f6>" #'consult-git-grep
       "<f7>" #'consult-compile-error
       "<f8>" #'consult-flymake
