@@ -28,16 +28,15 @@ if [ -d /etc/X11/xinit/xinitrc.d ] ; then
  unset f
 fi
 
-[ -f $HOME/.bash_profile ] && . $HOME/.bash_profile
+[ -f "$HOME"/.bash_profile ] && . "$HOME"/.bash_profile
 
 setxkbmap -option caps:escape &
 systemctl --user import-environment DISPLAY XAUTHORITY &
 
-if [[ $(xrandr | awk '/DP-1/ {print $2}') == "connected" ]]; then
+if [[ $(xrandr | awk '/DP/ {print $2}') == "connected" ]]; then
     xrandr \
-		--output HDMI-0 --pos 0x0 --mode 1920x1080 --primary \
-		--output DP-1 --pos 1920x0 --mode 1920x1080 &
-    exec i3 -c $HOME/.config/i3/config_dual
-else
-    exec i3 -c $HOME/.config/i3/config
+	    --output "$(xrandr --listactivemonitors | awk '/HDMI/ {print $4}')" --pos 0x0 --mode 1920x1080 --primary \
+		--output "$(xrandr --listactivemonitors | awk '/DP/ {print $4}')" --pos 1920x0 --mode 1920x1080 &
 fi
+
+exec i3 -c "$HOME"/.config/i3/config
