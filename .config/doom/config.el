@@ -77,7 +77,7 @@
                                                         ("inbox" ?i "for the unknown")))
                                          ".org")))
                       (set-buffer (org-capture-target-buffer fpath)))))
-        "* %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
+        "* TODO %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
         :empty-lines-before 1))))
   (use-package! org-roam
     :init
