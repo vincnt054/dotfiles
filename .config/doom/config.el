@@ -121,6 +121,26 @@
                      :select nil
                      :modeline nil))
 
+(after! sage-shell-mode
+  (use-package! sage-shell-mode
+    :init
+    (sage-shell:define-alias)
+    (custom-set-variables
+     '(sage-shell:use-prompt-toolkit nil)
+     '(sage-shell:use-simple-prompt t)
+     '(sage-shell:set-ipython-version-on-startup nil)
+     '(sage-shell:check-ipython-version-on-startup nil))
+    :config
+    (set-popup-rule! "*Sage*"
+      :side 'bottom
+      :size 0.3
+      :slot 1
+      :vslot 2
+      :ttl nil
+      :quit nil
+      :select nil
+      :modeline t)))
+
 (map! "C-x C-g" #'find-file-other-window
       "<f5>" #'consult-ripgrep
       "<f6>" #'consult-git-grep
