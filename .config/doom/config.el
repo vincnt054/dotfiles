@@ -111,9 +111,15 @@
           ("\\.tex\\'" "pdflatex")
           ("\\.html?\\'" "firefox"))))
 
-(after! async
-  (add-to-list 'display-buffer-alist '("*Async Shell Command*" . (display-buffer-no-window . nil)))
-  (setq async-shell-command-buffer 'new-buffer))
+(after! simple
+  (set-popup-rule! "^\\*Async Shell Command"
+                     :side 'bottom
+                     :slot 1
+                     :vslot 1
+                     :ttl nil
+                     :quit 'other
+                     :select nil
+                     :modeline nil))
 
 (map! "C-x C-g" #'find-file-other-window
       "<f5>" #'consult-ripgrep
