@@ -66,7 +66,7 @@
                                                  "/vault/daily/"
                                                  (format-time-string "%Y-%m-%d")
                                                  ".org::")))
-    (org-agenda-files '("deanima.org" "proletarii.org" "domus.org" "inbox.org" "hexis.org"))
+    (org-agenda-files '("deanima.org" "inbox.org"))
     (org-capture-templates
      '(("t" "Task" entry
         (function (lambda ()
@@ -74,8 +74,6 @@
                     (let ((fpath (concat org-directory "/"
                                          (read-answer "File: "
                                                       '(("deanima" ?d "for my own soul")
-                                                        ("proletarii" ?p "for my line of work")
-                                                        ("domus" ?f "for my girlfriend and family")
                                                         ("inbox" ?i "for the unknown")))
                                          ".org")))
                       (set-buffer (org-capture-target-buffer fpath)))))
