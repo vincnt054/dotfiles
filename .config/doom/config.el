@@ -89,6 +89,17 @@
         :empty-lines-before 1
         :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))))
 
+(after! company
+  (dolist (key '("<return>" "RET"))
+    (define-key company-active-map (kbd key)
+                `(menu-item nil company-complete
+                  :filter ,(lambda (cmd)
+                             (when (company-explicit-action-p)
+                               cmd)))))
+  (map! :map company-active-map "C-RET" #'company-complete-selection)
+  (map! :map company-active-map "C-<return>" #'company-complete-selection)
+  (define-key company-active-map (kbd "SPC") nil))
+
 (after! dired-x
   (setq dired-guess-shell-alist-user
         '(("\\.pdf\\'" "zathura")
