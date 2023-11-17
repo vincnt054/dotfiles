@@ -31,7 +31,6 @@ exec --no-startup-id clipmenud
 # startup
 exec --no-startup-id i3-msg 'workspace 1; exec emacs ~/'
 exec --no-startup-id i3-msg 'workspace 2; exec firefox'
-exec --no-startup-id i3-msg 'workspace 9; exec xterm -e newsboat'
 exec --no-startup-id i3-msg 'workspace 9; exec discord'
 
 # assign app to workspace
