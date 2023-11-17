@@ -57,6 +57,8 @@
 
 (after! org
   (use-package! org
+    :config
+    (add-to-list 'org-file-apps '("\\.pdf\\'" . "zathura %s"))
     :custom
     (org-use-fast-todo-selection 'expert)
     (org-todo-keywords '((sequence "TODO(t)" "IN PROGRESS(i@/!)" "WAITING(w@/!)" "|" "DONE(d@/!)" "CANCELLED(c@/!)")
