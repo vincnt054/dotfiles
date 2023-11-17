@@ -48,14 +48,14 @@
     :custom
     (org-use-fast-todo-selection 'expert)
     (org-todo-keywords '((sequence "TODO(t)" "IN PROGRESS(i@/!)" "WAITING(w@/!)" "|" "DONE(d@/!)" "CANCELLED(c@/!)")
-                         (sequence "TRIAGE(r@/!)" "BUG(b@/!)" "|" "FIXED(f@/!)" "KNOWN-CAUSE(k@/!)")))
+                         (sequence "RIAGE(r@/!)" "BUG(b@/!)" "|" "FIXED(f@/!)" "KNOWN-CAUSE(k@/!)")))
     (org-todo-keyword-faces
      '(("TODO" . (:foreground "goldenrod" :weight bold))
        ("IN PROGRESS" . (:foreground "royal blue" :weight bold))
        ("WAITING" . (:foreground "tomato" :weight bold))
        ("DONE" . (:foreground "spring green" :weight bold))
        ("CANCELLED" . (:foreground "slate gray" :weight bold))
-       ("TRIAGE" . (:foreground "steel blue" :background "gainsboro" :weight bold))
+       ("RIAGE" . (:foreground "steel blue" :background "gainsboro" :weight bold))
        ("BUG" . (:foreground "peru" :background "dark red" :weight bold))
        ("FIXED" . (:foreground "spring green" :weight bold))
        ("KNOWN-CAUSE" . (:foreground "salmon" :weight bold))))
