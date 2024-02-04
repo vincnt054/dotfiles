@@ -25,8 +25,12 @@ mkdir ${HOME}/.cache/mozilla/firefox
 mkdir ${HOME}/.mozilla
 whitelist ${HOME}/.cache/mozilla/firefox
 whitelist ${HOME}/.mozilla
+whitelist ${HOME}/documents
 whitelist ${HOME}/img
 whitelist ${HOME}/iso
+whitelist ${HOME}/library
+whitelist ${HOME}/projects/website
+whitelist ${HOME}/projects/codeforces
 
 # Add one of the following whitelist options to your firefox.local to enable KeePassXC Plugin support.
 # NOTE: start KeePassXC before Firefox and keep it open to allow communication between them.

@@ -1,9 +1,11 @@
+! XTerm
 ! Term name
 XTerm.termName: xterm-256color
 
 ! Font
 XTerm*faceName: Ubuntu Mono:style=Regular
 XTerm*faceSize: 13
+
 
 ! Force UTF
 XTerm.vt100.locale: false
@@ -24,50 +26,92 @@ XTerm.vt100.scrollBar: true
 XTerm.vt100.scrollbar.width: 8
 
 ! Clipboard
-XTerm.vt100.selectToClipboard: PRIMARY
+XTerm.vt100.selectToClipboard: true
 
 ! Keybinds
 XTerm*VT100.Translations: #override \
-    Ctrl <Key> plus:           larger-vt-font() \n\
+    Ctrl <Key> plus:           restore() \n\
+    Ctrl Shift <Key> plus:           larger-vt-font() \n\
     Ctrl <Key> minus:          smaller-vt-font() \n\
     Ctrl Shift <Key>C: copy-selection(CLIPBOARD) \n\
     Ctrl Shift <Key>V: insert-selection(CLIPBOARD)
 
-!Background & foreground
-XTerm*background: #002B36
-XTerm*foreground: #D2D2D2
-XTerm*borderColor: #343434
+! URXVT
+URxvt*termName: rxvt
 
-!Colors
+! lines buffer
+URxvt.saveLines: 4096
+
+! Font
+URxvt.font: xft:DejaVu Sans Mono:size=13:antialias=true
+
+! ! do not scroll with output
+URxvt*scrollTtyOutput: false
+! scroll in relation to buffer (with mouse scroll or Shift+Page Up)
+URxvt*scrollWithBuffer: true
+! scroll back to the bottom on keypress
+URxvt*scrollTtyKeypress: true
+
+! scrollback disabled in secondary screen
+URxvt.secondaryScreen: 1
+URxvt.secondaryScroll: 0
+URxvt.secondaryWheel: 1
+
+! Reduce spaing of text by one pixel
+URxvt.letterSpace: -1
+
+! Extensions to URXVT
+URxvt.perl-ext-common: default,matcher,selection-to-clipboard,url-select,resize-font
+
+! URL launcher
+URxvt.url-launcher: /usr/bin/xdg-open
+URxvt.matcher.button: 1
+URxvt.matcher.rend.0: Uline Bold fg5
+
+! URL without mouse
+URxvt.keysym.M-u: perl:url-select:select_next
+URxvt.url-select.launcher: /usr/bin/xdg-open
+URxvt.url-select.underline: true
+
+! Autocopy to clipboard
+URxvt.clipboard.autocopy: true
+
+! ALL
+! Background & foreground
+*background: #002B36
+*foreground: #D2D2D2
+*borderColor: #343434
+
+! Colors
 !-------------------------
-!black
-XTerm*color0: #222222
-XTerm*color8: #454545
+! black
+*color0: #222222
+*color8: #454545
 
-!red
-XTerm*color1: #9E5641
-XTerm*color9: #CC896D
+! red
+*color1: #9E5641
+*color9: #CC896D
 
-!green
-XTerm*color2: #6C7E55
-XTerm*color10: #C4DF90
+! green
+*color2: #6C7E55
+*color10: #C4DF90
 
-!yellow
-XTerm*color3: #CAAF2B
-XTerm*color11: #FFE080
+! yellow
+*color3: #CAAF2B
+*color11: #FFE080
 
-!blue
-XTerm*color4: #7FB8D8
-XTerm*color12: #B8DDEA
+! blue
+*color4: #7FB8D8
+*color12: #B8DDEA
 
-!magenta
-XTerm*color5: #956D9D
-XTerm*color13: #C18FCB
+! magenta
+*color5: #956D9D
+*color13: #C18FCB
 
-!cyan
-XTerm*color6: #4c8ea1
-XTerm*color14: #6bc1d0
+! cyan
+*color6: #4c8ea1
+*color14: #6bc1d0
 
-!white
-XTerm*color7: #808080
-XTerm*color15: #cdcdcd
+! white
+*color7: #808080
+*color15: #cdcdcd

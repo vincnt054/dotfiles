@@ -84,15 +84,20 @@
     (org-capture-templates
      '(("t" "Task" entry
         (function (lambda ()
-                    (interactive)
                     (let ((fpath (concat org-directory "/"
-                                         (read-answer "File: "
-                                                      '(("deanima" ?d "for my own soul")
-                                                        ("inbox" ?i "for the unknown")))
+                                         (car (split-string
+                                               (let ((xlist '("deanima - for my own soul" "inbox - for the unknown")))
+                                                  (completing-read "File name:" xlist nil t))))
                                          ".org")))
                       (set-buffer (org-capture-target-buffer fpath)))))
-        "* TODO %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
-        :empty-lines-before 1))))
+        "* %^{Task|TODO|RIAGE|BUG} %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
+        :prepend t
+        :empty-lines-after 1)
+       ("r" "Book" entry (file "reading_list.org")
+        "* %^{Title}\n:PROPERTIES:\n:CAPTURED: %U\n:PAGES_READ: %^{Pages read}\n:PAGES: %^{Number of pages}\n:LINK: %^{Link}\n:END:"
+        :prepend t
+        :empty-lines-after 1))))
+
   (use-package! org-roam
     :init
     (setq org-roam-v2-ack t)
@@ -143,23 +148,12 @@
      '(sage-shell:use-prompt-toolkit nil)
      '(sage-shell:use-simple-prompt t)
      '(sage-shell:set-ipython-version-on-startup nil)
-     '(sage-shell:check-ipython-version-on-startup nil))
-    :config
-    (set-popup-rule! "*Sage*"
-      :side 'bottom
-      :size 0.3
-      :slot 1
-      :vslot 2
-      :ttl nil
-      :quit nil
-      :select nil
-      :modeline t)))
+     '(sage-shell:check-ipython-version-on-startup nil))))
 
-(map! "C-x C-g" #'find-file-other-window
-      "<f5>" #'consult-ripgrep
+(map! "<f5>" #'consult-ripgrep
       "<f6>" #'consult-git-grep
       "<f7>" #'consult-compile-error
-      "<f8>" #'consult-flymake
+      "<f8>" #'consult-flycheck
       "<f9>" #'magit
       "<f10>" #'vterm
       "<f11>" #'recompile

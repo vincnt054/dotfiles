@@ -9,7 +9,10 @@ noblacklist ${HOME}/.config/discord
 
 mkdir ${HOME}/.config/discord
 whitelist ${HOME}/.config/discord
+whitelist ${HOME}/documents
 whitelist ${HOME}/img
+whitelist ${HOME}/library
+whitelist ${HOME}/.minecraft/screenshots
 
 private-bin discord,Discord
 private-opt discord,Discord

@@ -2,10 +2,12 @@
 ;;; $DOOMDIR/packages.el
 
 (package! evil-escape :disable t)
-
 (package! hl-todo :disable t)
+(package! doom-dashboard :disable t)
 
 (package! sage-shell-mode)
+(package! org-ql)
+
 ;; To install a package with Doom you must declare them here and run 'doom sync'
 ;; on the command line, then restart Emacs for the changes to take effect -- or
 ;; use 'M-x doom/reload'.

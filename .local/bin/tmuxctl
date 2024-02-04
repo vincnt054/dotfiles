@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+: "${TMUXCTL_LAUNCHER=dmenu}"
+: "${TERMINAL=urxvt}"
+
+options=("New tmux session" "Rename a session" "Kill a session")
+launcher_args=()
+
+shopt -s nullglob
+
+if [[ $1 == --help ]]; then
+        cat << 'EOF'
+Tmuxctl is a simple tmux session manager.
+Launch tmux sessions with dmenu-compatible launcher instead of typing it in the terminal.
+
+All arguments will be passed through to dmenu itself.
+
+Environment variables:
+
+- $TMUXCTL_LAUNCHER (default: dmenu): specify a dmenu-compatible launcher
+EOF
+    exit 0
+fi
+
+[[ "${TMUXCTL_LAUNCHER}" == rofi ]] && set -- -dmenu "$@"
+
+avail_options=$(IFS=$'\n'; echo "${options[*]}")
+
+avail_tmux_session=$(tmux list-sessions 2> /dev/null)
+[[ -n "${avail_tmux_session}" ]] && avail_options="${avail_tmux_session}\n${avail_options}"
+
+chosen_line=$(echo -e "${avail_options}" | "${TMUXCTL_LAUNCHER}" "${launcher_args[@]}" "$@")
+
+case "${chosen_line}" in
+    "") exit 0 ;;
+    "New tmux session")
+        session=$("${TMUXCTL_LAUNCHER}" "${launcher_args[@]}" "$@" -p "${chosen_line}:" < /dev/null)
+        [[ -n "$session" ]] && $TERMINAL -e tmux new -s "${session}"
+        ;;
+    "Rename a session")
+        [[ -z "${avail_tmux_session}" ]] && exit 0
+        session=$(echo "${avail_tmux_session}" | "${TMUXCTL_LAUNCHER}" "${launcher_args[@]}" "$@" -p "${chosen_line}:")
+        if [[ -n "${session}" ]]; then
+            new_name=$("${TMUXCTL_LAUNCHER}" "${launcher_args[@]}" "$@" -p "New name:" < /dev/null)
+            session=$(echo "${session}" | cut -d ':' -f1)
+            tmux rename-session -t "${session}" "${new_name}"
+        fi
+        ;;
+    "Kill a session")
+        [[ -z "${avail_tmux_session}" ]] && exit 0
+        session=$(echo "${avail_tmux_session}" | "${TMUXCTL_LAUNCHER}" "${launcher_args[@]}" "$@" -p "${chosen_line}:")
+        [[ -n "${session}" ]] && tmux kill-session -t "$(echo "${session}" | cut -d ':' -f1)"
+        ;;
+    *)
+        $TERMINAL -e tmux attach -t "$(echo "${chosen_line}" | cut -d ':' -f1)"
+        ;;
+esac
+
+launcher_exit_code=$?
+exit "${launcher_exit_code:-"$?"}"
