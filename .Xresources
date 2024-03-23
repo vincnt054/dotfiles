@@ -1,72 +1,80 @@
-! XTerm
-! Term name
-XTerm.termName: xterm-256color
+!!! ALL
+! Locale
+*.locale: false
+*.utf8: true
 
-! Font
-XTerm*faceName: Ubuntu Mono:style=Regular
-XTerm*faceSize: 13
+! Scrollback
+*.saveLines: 4096
 
+! Cursor
+*.cursorBlink: true
 
-! Force UTF
-XTerm.vt100.locale: false
-XTerm.vt100.utf8: true
-
-! Make 'Alt' key behave as on other terminal emulators
-XTerm.vt100.metaSendsEscape: true
-
-! Fix the backspace key
-XTerm.vt100.backarrowKey: false
-XTerm.ttyModes: erase ^?
-
-! History lines
-XTerm.vt100.saveLines: 4096
-
-! Scrollbar
-XTerm.vt100.scrollBar: true
-XTerm.vt100.scrollbar.width: 8
+! Escape char
+*.metaSendsEscape: true
+*.backarrowKey: false
+*.ttyModes: erase ^?
 
 ! Clipboard
-XTerm.vt100.selectToClipboard: true
+*.selectToClipboard: true
+
+! Do not scroll with output
+*.scrollTtyOutput: false
+! Scroll in relation to buffer (with mouse scroll or Shift+Page Up)
+*.scrollWithBuffer: true
+! Scroll back to the bottom on keypress
+*.scrollTtyKeypress: true
+
+! Border
+*.internalBorder: 10
+
+!!! xterm
+! Term name
+xterm.termName: xterm-256color
+
+! Font
+xterm*faceName: Ubuntu Mono:style=Regular
+xterm*faceSize: 13
 
 ! Keybinds
-XTerm*VT100.Translations: #override \
+xterm*vt100.Translations: #override \
     Ctrl <Key> plus:           restore() \n\
     Ctrl Shift <Key> plus:           larger-vt-font() \n\
     Ctrl <Key> minus:          smaller-vt-font() \n\
     Ctrl Shift <Key>C: copy-selection(CLIPBOARD) \n\
     Ctrl Shift <Key>V: insert-selection(CLIPBOARD)
 
-! URXVT
-URxvt*termName: rxvt
+! Scrollbar
+xterm*vt100.ScrollBar: true
+xterm*vt100.scrollbar.width: 8
+xterm*vt100.rightScrollBar: true
+xterm*vt100.leftScrollBar: false
 
-! lines buffer
-URxvt.saveLines: 4096
+! Cursor
+xterm*v100.cursorBlink: true
 
+!!! URxvt
 ! Font
 URxvt.font: xft:DejaVu Sans Mono:size=13:antialias=true
 
-! ! do not scroll with output
-URxvt*scrollTtyOutput: false
-! scroll in relation to buffer (with mouse scroll or Shift+Page Up)
-URxvt*scrollWithBuffer: true
-! scroll back to the bottom on keypress
-URxvt*scrollTtyKeypress: true
+! Geometry
+URxvt*geometry: 80x240+0+0
+! Scrollbar
+URxvt.scrollBar_right: true
+URxvt.scrollBar_left: false
 
-! scrollback disabled in secondary screen
+! Scrollback disabled in secondary screen
 URxvt.secondaryScreen: 1
 URxvt.secondaryScroll: 0
-URxvt.secondaryWheel: 1
 
 ! Reduce spaing of text by one pixel
 URxvt.letterSpace: -1
 
 ! Extensions to URXVT
-URxvt.perl-ext-common: default,matcher,selection-to-clipboard,url-select,resize-font
+URxvt.perl-ext-common: default,matcher,selection-to-clipboard,url-select
 
 ! URL launcher
-URxvt.url-launcher: /usr/bin/xdg-open
 URxvt.matcher.button: 1
-URxvt.matcher.rend.0: Uline Bold fg5
+URxvt.matcher.rend.0: Uline Bold fg3
 
 ! URL without mouse
 URxvt.keysym.M-u: perl:url-select:select_next
