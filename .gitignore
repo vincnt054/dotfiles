@@ -1,1 +1,14 @@
 .dotfiles
+.Xauthority
+.ICEauthority
+iso
+.dmrc
+.xim.template
+.viminfo
+.i18n
+.rustup
+.pki
+.mozilla
+.log
+.cargo
+.cache
