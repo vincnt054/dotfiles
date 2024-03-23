@@ -25,8 +25,13 @@ mkdir ${HOME}/.cache/mozilla/firefox
 mkdir ${HOME}/.mozilla
 whitelist ${HOME}/.cache/mozilla/firefox
 whitelist ${HOME}/.mozilla
-whitelist ${HOME}/documents
-whitelist ${HOME}/img
+whitelist ${HOME}/Desktop
+whitelist ${HOME}/Documents
+whitelist ${HOME}/Downloads
+whitelist ${HOME}/Pictures
+whitelist ${HOME}/Music
+whitelist ${HOME}/Public
+whitelist ${HOME}/Video
 whitelist ${HOME}/iso
 whitelist ${HOME}/library
 whitelist ${HOME}/projects/website
