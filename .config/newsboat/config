@@ -1,5 +1,5 @@
 auto-reload yes
-reload-time 60
+reload-time 3600
 
 bind-key j down
 bind-key k up
@@ -19,15 +19,15 @@ bind-key N prev-unread
 bind-key D pb-download
 bind-key x pb-delete
 
-color listnormal cyan default
-color listfocus black yellow standout bold
+color listnormal black default
+color listfocus green default
 color listnormal_unread blue default
-color listfocus_unread yellow default bold
+color listfocus_unread green default
 color info red black bold
 color article white default bold
 
 highlight all "---.*---" yellow
-highlight feedlist ".*(0/0))" black
+highlight feedlist "^.*\\(0/0\\) " black default
 highlight article "(^Feed:.*|^Title:.*|^Author:.*)" cyan default bold
 highlight article "(^Link:.*|^Date:.*)" default default
 highlight article "https?://[^ ]+" green default

@@ -1,11 +1,31 @@
+"--- Linux ---"
+# Linux Security
+https://linuxsecurity.com/linuxsecurity_hybrid.xml "~Linux Security" linux
 # LWN
-https://lwn.net/headlines/rss linux "~LWN headlines"
+https://lwn.net/headlines/rss linux "~LWN" linux
 
 # Archlinux
-https://archlinux.org/feeds/packages/ linux archlinux package "~Arch Linux - Package Updates"
-https://aur.archlinux.org/rss linux archlinux package "~Arch Linux - Newest Packages"
-https://archlinux.org/feeds/packages/added/ linux archlinux package "~Arch Linux - All Arches - Recently added Packages"
-https://gitlab.archlinux.org/groups/archlinux/packaging/packages/-/issues?format=atom linux archlinux package issue "~Arch Linux - Packages Issues"
-https://gitlab.archlinux.org/archlinux/archiso/-/issues?format=atom linux archlinux issue iso "~Arch Linux - Archiso Issues"
-https://gitlab.archlinux.org/pacman/pacman/-/issues?format=atom linux archlinux issue pacman "~Arch Linux - Pacman Issues"
-https://gitlab.archlinux.org/archlinux/aurweb/-/issues?format=atom linux archlinux issue aur "~Arch Linux - Aurweb Issues"
+"--- Archlinux ---"
+https://archlinux.org/feeds/packages/ linux archlinux package "~Package Updates" Archlinux linux
+https://aur.archlinux.org/rss linux archlinux package "~Newest Packages" Archlinux linux
+https://archlinux.org/feeds/packages/added/ linux archlinux package "~All Arches - Recently added Packages" Archlinux linux
+https://gitlab.archlinux.org/groups/archlinux/packaging/packages/-/issues?format=atom linux archlinux package issue "~Packages Issues" Archlinux linux
+https://gitlab.archlinux.org/archlinux/archiso/-/issues?format=atom linux archlinux issue iso "~Archiso Issues" Archlinux linux
+https://gitlab.archlinux.org/pacman/pacman/-/issues?format=atom linux archlinux issue pacman "~Pacman Issues" Archlinux linux
+https://gitlab.archlinux.org/archlinux/aurweb/-/issues?format=atom linux archlinux issue aur "~Aurweb Issues" Archlinux linux
+
+"--- openSUSE ---"
+https://news.opensuse.org/?feed=rss2 "~openSUSE News" openSUSE linux
+https://planet.opensuse.org/en/rss20.xml "~Planet openSUSE News" openSUSE linux
+
+"--- Red Hat ---"
+https://www.redhat.com/sysadmin/rss.xml "~SysAdmin" Redhat linux
+https://www.redhat.com/en/rss/blog/channel/security "~Security" Redhat linux
+https://www.redhat.com/en/rss/blog/channel/red-hat-enterprise-linux "~RHEL" Redhat linux
+https://www.redhat.com/en/rss/blog/channel/red-hat-satellite "~Satellite" Redhat linux
+https://www.redhat.com/en/rss/blog/channel/red-hat-openshift "~Openshift" Redhat linux
+https://research.redhat.com/feed/ "~Research" Redhat linxu
+https://next.redhat.com/feed/ "~Emerging Technologies" Redhat linux
+# Copona
+"--- Copona ---"
+"exec:$HOME/projects/filter-rss/filter-rss -pattern 'Japan|Tokyo|Osaka' https://www.ozbargain.com.au/cat/travel/feed" "~OzBargain - Japan" Ozbargain travel
