@@ -184,7 +184,7 @@
         :prepend t
         :empty-lines-after 1)
        ("r" "Readings" entry (file "reading_list.org")
-        "* LEGERE %^{Title}\n:PROPERTIES:\n:CAPTURED: %U\n:PAGES_READ: %^{Pages read|0}\n:PAGES: %^{Number of pages}\n:LINK: %^{LINK}\n:END:"
+        "* LEGERE %^{Title}\n:PROPERTIES:\n:CAPTURED: %U\n:PAGES: %^{Number of pages}\n:LINK: %^{LINK}\n:END:"
         :prepend t
         :empty-lines-after 1))))
 
