@@ -54,7 +54,7 @@ xterm*v100.cursorBlink: true
 
 !!! URxvt
 ! Font
-URxvt.font: xft:DejaVu Sans Mono:size=13:antialias=true
+URxvt.font: xft:Ubuntu Mono:size=13:antialias=true
 
 ! Geometry
 URxvt*geometry: 80x240+0+0
