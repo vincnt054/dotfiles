@@ -43,6 +43,39 @@
 (setq org-directory "~/wiki")
 (setq org-roam-directory "~/wiki/vault")
 
+(defun my/evil-delete-char (orig-fn beg end &optional type _ &rest args)
+  "Make x to not write to clipboard."
+  (apply orig-fn beg end type ?_ args))
+
+(defun my/marginalia-mark-category (seq category)
+  "Add category to a completing-read for marginalia use"
+  (lambda (str pred flag)
+    (pcase flag
+      ('metadata
+       `(metadata (category . ,category)))
+      (_
+       (all-completions str seq pred)))))
+
+(defun my/org-roam-save-to-file (title)
+  "Save to an org roam file"
+  (let* ((filename (file-truename (concat org-directory "/vault/daily/" title ".org"))))
+    (unless (file-exists-p filename)
+      (save-current-buffer
+        (set-buffer (org-capture-target-buffer filename))
+        (insert ":PROPERTIES:\n:ID:        \n:END:\n#+title: " title)
+        (goto-char 25)
+        (org-id-get-create)
+        (write-file filename)
+        (org-roam-db-update-file filename)))))
+
+(defun my/propertize-org-task (level org-todo-keyword raw-value)
+  "Give face value to an org todo task"
+  (concat (propertize (make-string level ?*) 'face (nth (- level 1) org-level-faces))
+          " "
+          (propertize org-todo-keyword 'face (cdr (assoc org-todo-keyword org-todo-keyword-faces)))
+          " "
+          raw-value))
+
 (add-to-list 'auto-mode-alist '("\\.service\\'" . conf-unix-mode))
 (add-to-list 'auto-mode-alist '("\\.timer\\'" . conf-unix-mode))
 (add-to-list 'auto-mode-alist '("\\.target\\'" . conf-unix-mode))
@@ -54,47 +87,104 @@
 (add-to-list 'auto-mode-alist '("\\.netdev\\'" . conf-unix-mode))
 (add-to-list 'auto-mode-alist '("\\.network\\'" . conf-unix-mode))
 (add-to-list 'auto-mode-alist '("\\.link\\'" . conf-unix-mode))
+(add-to-list 'auto-mode-alist '("/etc/ansible/hosts\\'" . yaml-mode))
+
+(after! hl-todo
+  (use-package! hl-todo
+    :custom
+    (hl-todo-keyword-faces
+     '(("TODO"   . "goldenrod")
+       ("LEGERE"  . "goldenrod")
+       ("ARRAY"  . "goldenrod")
+       ("HITCH"  . "tomato") ;; Overlooked, can be remediated quickly
+       ("DEBUG"  . "dark orchid") ;; In process of debugging
+       ("BUG"    . "red")
+       ("KNOWN-CAUSE" . "royal blue")
+       ("STUB"   . "dark red")))))
+
+(after! evil
+  (use-package! evil
+    :custom
+    (evil-want-minibuffer t)
+    :config
+    (advice-add 'evil-delete-char :around 'my/evil-delete-char)))
 
 (after! org
   (use-package! org
     :config
     (add-to-list 'org-file-apps '("\\.pdf\\'" . "zathura %s"))
+    (advice-add #'org-archive-subtree-default :before
+                (lambda () (my/org-roam-save-to-file (format-time-string "%Y-%m-%d"))))
     :custom
-    (org-use-fast-todo-selection 'expert)
-    (org-todo-keywords '((sequence "TODO(t)" "IN PROGRESS(i@/!)" "WAITING(w@/!)" "|" "DONE(d@/!)" "CANCELLED(c@/!)")
-                         (sequence "RIAGE(r@/!)" "BUG(b@/!)" "|" "FIXED(f@/!)" "KNOWN-CAUSE(k@/!)")))
+    (org-use-fast-todo-selection 'auto)
+    (org-startup-folded t)
+    (org-todo-keywords '((sequence "TODO(t)" "IN-PROGRESS(i@/!)" "WAITING(w@/!)" "|" "DONE(d@/!)" "CANCELLED(c@/!)")
+                         (sequence "LEGERE(l)" "|" "DONE(d@/!)")
+                         (sequence "ARRAY(a@/!)" "BUG(b@/!)" "HITCH(h@/!)" "|" "FIXED(f@/!)" "KNOWN-CAUSE(k@/!)" "STUB(s@/!)")))
     (org-todo-keyword-faces
      '(("TODO" . (:foreground "goldenrod" :weight bold))
-       ("IN PROGRESS" . (:foreground "royal blue" :weight bold))
+       ("LEGERE" . (:foreground "goldenrod" :weight bold))
+       ("IN-PROGRESS" . (:foreground "royal blue" :weight bold))
        ("WAITING" . (:foreground "tomato" :weight bold))
        ("DONE" . (:foreground "spring green" :weight bold))
        ("CANCELLED" . (:foreground "slate gray" :weight bold))
-       ("RIAGE" . (:foreground "steel blue" :background "gainsboro" :weight bold))
-       ("BUG" . (:foreground "peru" :background "dark red" :weight bold))
+       ("ARRAY" . (:foreground "goldenrod" :weight bold))
+       ("HITCH" . (:foreground "tomato" :weight bold)) ;; Overlooked, can be remediated quickly
+       ("BUG" . (:foreground "red" :weight bold))
        ("FIXED" . (:foreground "spring green" :weight bold))
-       ("KNOWN-CAUSE" . (:foreground "salmon" :weight bold))))
+       ("KNOWN-CAUSE" . (:foreground "royal blue" :weight bold))
+       ("STUB" . (:foreground "dark red" :weight bold))))
     (org-log-done 'time)
     (org-log-into-drawer t)
     (org-hide-emphasis-markers t)
     (org-archive-location (file-truename (concat org-directory
                                                  "/vault/daily/"
                                                  (format-time-string "%Y-%m-%d")
-                                                 ".org::")))
+                                                 ".org::* Archive entries from %s")))
+    (org-archive-subtree-save-file-p t)
     (org-agenda-files '("deanima.org" "inbox.org"))
+    (org-agenda-custom-commands
+     `(("r" "Readings" todo "LEGERE"
+        ((org-agenda-files '(,(expand-file-name "reading_list.org" org-directory)))
+         (org-agenda-overriding-header "Readings")
+         (org-agenda-prefix-format "\t")))))
     (org-capture-templates
-     '(("t" "Task" entry
+     '(("t" "Task entry")
+       ("tt" "Task" entry
         (function (lambda ()
-                    (let ((fpath (concat org-directory "/"
-                                         (car (split-string
-                                               (let ((xlist '("deanima - for my own soul" "inbox - for the unknown")))
-                                                  (completing-read "File name:" xlist nil t))))
-                                         ".org")))
-                      (set-buffer (org-capture-target-buffer fpath)))))
-        "* %^{Task|TODO|RIAGE|BUG} %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
+                    (let* ((choice (completing-read "Which org-agenda file? "
+                                                    (my/marginalia-mark-category (mapcar #'(lambda (file) (expand-file-name file org-directory)) org-agenda-files)
+                                                                                 'file)
+                                                    nil nil)))
+                      (set-buffer (org-capture-target-buffer choice))
+                      (goto-char (point-min)))))
+        "* %^{Task|TODO|ARRAY|BUG} %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
         :prepend t
         :empty-lines-after 1)
-       ("r" "Book" entry (file "reading_list.org")
-        "* %^{Title}\n:PROPERTIES:\n:CAPTURED: %U\n:PAGES_READ: %^{Pages read}\n:PAGES: %^{Number of pages}\n:LINK: %^{Link}\n:END:"
+       ("ts" "Subtask" entry
+        (function (lambda ()
+                    (let* ((ql-queries (org-ql-select (org-agenda-files)
+                                           '(and (todo)
+                                                 (level 1))
+                                           :action 'element-with-markers
+                                           :sort 'todo))
+                           (queries (mapcar #'(lambda (query)
+                                                 (let* ((level (org-element-property :level query))
+                                                        (org-todo-keyword (org-element-property :todo-keyword query))
+                                                        (raw-value (org-element-property :raw-value query))
+                                                        (org-marker (org-element-property :org-marker query)))
+                                                   (list
+                                                    (my/propertize-org-task level org-todo-keyword raw-value)
+                                                    org-marker))) ql-queries))
+                           (choice (completing-read "Which task to subtask? " (my/marginalia-mark-category queries 'face) nil nil))
+                           (query-marker (cadr (assoc choice queries))))
+                      (set-buffer (marker-buffer query-marker))
+                      (goto-char (marker-position query-marker)))))
+        "* %^{Task|TODO|ARRAY|BUG} %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
+        :prepend t
+        :empty-lines-after 1)
+       ("r" "Readings" entry (file "reading_list.org")
+        "* LEGERE %^{Title}\n:PROPERTIES:\n:CAPTURED: %U\n:PAGES_READ: %^{Pages read|0}\n:PAGES: %^{Number of pages}\n:LINK: %^{LINK}\n:END:"
         :prepend t
         :empty-lines-after 1))))
 
@@ -106,7 +196,14 @@
     (org-roam-dailies-capture-templates
      `(("d" "default" entry "\n* %<%I:%M %p> %?"
         :empty-lines-before 1
-        :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))))
+        :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n")))))
+
+  (use-package evil-org
+    :after org
+    :hook (org-mode . (lambda () evil-org-mode))
+    :config
+    (require 'evil-org-agenda)
+    (evil-org-agenda-set-keys)))
 
 (after! company
   (dolist (key '("<return>" "RET"))
@@ -129,34 +226,5 @@
           ("\\.gif\\'" "nsxiv")
           ("\\.tex\\'" "pdflatex")
           ("\\.html?\\'" "firefox"))))
-
-(after! simple
-  (set-popup-rule! "^\\*Async Shell Command"
-                     :side 'bottom
-                     :slot 1
-                     :vslot 1
-                     :ttl nil
-                     :quit 'other
-                     :select nil
-                     :modeline nil))
-
-(after! sage-shell-mode
-  (use-package! sage-shell-mode
-    :init
-    (sage-shell:define-alias)
-    (custom-set-variables
-     '(sage-shell:use-prompt-toolkit nil)
-     '(sage-shell:use-simple-prompt t)
-     '(sage-shell:set-ipython-version-on-startup nil)
-     '(sage-shell:check-ipython-version-on-startup nil))))
-
-(map! "<f5>" #'consult-ripgrep
-      "<f6>" #'consult-git-grep
-      "<f7>" #'consult-compile-error
-      "<f8>" #'consult-flycheck
-      "<f9>" #'magit
-      "<f10>" #'vterm
-      "<f11>" #'recompile
-      "<f12>" #'compile)
 
 ;;; config.el ends here
