@@ -1,0 +1,91 @@
+# i3blocks config file
+#
+# Please see man i3blocks for a complete reference!
+# The man page is also hosted at http://vivien.github.io/i3blocks
+#
+# List of valid properties:
+#
+# align
+# color
+# command
+# full_text
+# instance
+# interval
+# label
+# min_width
+# name
+# separator
+# separator_block_width
+# short_text
+# signal
+# urgent
+
+# Global properties
+#
+# The top properties below are applied to every block, but can be overridden.
+# Each block command defaults to the script name to avoid boilerplate.
+# Change $SCRIPT_DIR to the location of your scripts!
+command=$HOME/.config/i3blocks/scripts/$BLOCK_NAME
+separator_block_width=15
+markup=none
+
+[zypper-update]
+interval=once
+markup=pango
+WATCH=^linux.*
+UPDATE_COLOR=#FFFF85
+QUIET=true
+LABEL=
+
+[disk]
+label=/home: 
+dir=$HOME
+interval=30
+separator=false
+
+[disk]
+label=/: 
+DIR=/
+interval=30
+separator=true
+
+[iface]
+IFACE=eno1
+LABEL=IPv4:
+color=#91E78B
+ADDRESS_FAMILY=inet
+interval=60
+
+[memory2]
+interval=persist
+markup=pango
+bar_chars=_▁▂▃▄▅▆▇█
+bar_size=10
+critical=80
+warning=50
+color_critical=#FF7373
+color_warning=#FFA500
+
+[cpu_util_detailed]
+markup=pango
+interval=-2
+#report_time=5
+#stats=usr nice sys iowait
+#format=%6.2f
+#warn=80
+#usr_color=green
+#nice_color=yellow
+#sys_color=red
+#iowait_color=grey
+#irq_color=purple
+#soft_color=violet
+#steal_color=orange
+#guest_color=cyan
+#gnice_color=blue
+#idle_color=white
+#total_color=white
+
+# Date Time
+[time]
+command=date '+%Y-%m-%d %H:%M:%S'
+interval=5
