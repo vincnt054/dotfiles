@@ -20,8 +20,8 @@
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
 ;;
-;;(setq doom-font (font-spec :family "Fira Code" :size 12 :weight 'semi-light)
-;;      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
+(setq doom-font (font-spec :family "Ubuntu Mono" :size 14)
+      doom-variable-pitch-font (font-spec :family "Ubuntu Mono" :size 15))
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -33,8 +33,6 @@
 ;; `load-theme' function. This is the default:
 (setq doom-theme 'doom-solarized-dark)
 
-;; This determines the style of line numbers in effect. If set to `nil', line
-;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type 'relative)
 
 (setq delete-by-moving-to-trash t)
@@ -42,39 +40,6 @@
 
 (setq org-directory "~/wiki")
 (setq org-roam-directory "~/wiki/vault")
-
-(defun my/evil-delete-char (orig-fn beg end &optional type _ &rest args)
-  "Make x to not write to clipboard."
-  (apply orig-fn beg end type ?_ args))
-
-(defun my/marginalia-mark-category (seq category)
-  "Add category to a completing-read for marginalia use"
-  (lambda (str pred flag)
-    (pcase flag
-      ('metadata
-       `(metadata (category . ,category)))
-      (_
-       (all-completions str seq pred)))))
-
-(defun my/org-roam-save-to-file (title)
-  "Save to an org roam file"
-  (let* ((filename (file-truename (concat org-directory "/vault/daily/" title ".org"))))
-    (unless (file-exists-p filename)
-      (save-current-buffer
-        (set-buffer (org-capture-target-buffer filename))
-        (insert ":PROPERTIES:\n:ID:        \n:END:\n#+title: " title)
-        (goto-char 25)
-        (org-id-get-create)
-        (write-file filename)
-        (org-roam-db-update-file filename)))))
-
-(defun my/propertize-org-task (level org-todo-keyword raw-value)
-  "Give face value to an org todo task"
-  (concat (propertize (make-string level ?*) 'face (nth (- level 1) org-level-faces))
-          " "
-          (propertize org-todo-keyword 'face (cdr (assoc org-todo-keyword org-todo-keyword-faces)))
-          " "
-          raw-value))
 
 (add-to-list 'auto-mode-alist '("\\.service\\'" . conf-unix-mode))
 (add-to-list 'auto-mode-alist '("\\.timer\\'" . conf-unix-mode))
@@ -104,6 +69,10 @@
 
 (after! evil
   (use-package! evil
+    :preface
+    (defun my/evil-delete-char (orig-fn beg end &optional type _ &rest args)
+      "Make x to not write to clipboard."
+      (apply orig-fn beg end type ?_ args))
     :custom
     (evil-want-minibuffer t)
     :config
@@ -111,6 +80,35 @@
 
 (after! org
   (use-package! org
+    :preface
+    (defun my/marginalia-mark-category (seq category)
+      "Add category to a completing-read for marginalia use"
+      (lambda (str pred flag)
+        (pcase flag
+          ('metadata
+           `(metadata (category . ,category)))
+          (_
+           (all-completions str seq pred)))))
+
+    (defun my/org-roam-save-to-file (title)
+      "Save to an org roam file"
+      (let* ((filename (file-truename (concat org-directory "/vault/daily/" title ".org"))))
+        (unless (file-exists-p filename)
+          (save-current-buffer
+            (set-buffer (org-capture-target-buffer filename))
+            (insert ":PROPERTIES:\n:ID:        \n:END:\n#+title: " title)
+            (goto-char 25)
+            (org-id-get-create)
+            (write-file filename)
+            (org-roam-db-update-file filename)))))
+
+    (defun my/propertize-org-task (level org-todo-keyword raw-value)
+      "Give face value to an org todo task"
+      (concat (propertize (make-string level ?*) 'face (nth (- level 1) org-level-faces))
+              " "
+              (propertize org-todo-keyword 'face (cdr (assoc org-todo-keyword org-todo-keyword-faces)))
+              " "
+              raw-value))
     :config
     (add-to-list 'org-file-apps '("\\.pdf\\'" . "zathura %s"))
     (advice-add #'org-archive-subtree-default :before
@@ -212,19 +210,18 @@
                   :filter ,(lambda (cmd)
                              (when (company-explicit-action-p)
                                cmd)))))
-  (map! :map company-active-map "C-RET" #'company-complete-selection)
-  (map! :map company-active-map "C-<return>" #'company-complete-selection)
+  (map! :map company-active-map "S-RET" #'company-complete-selection)
+  (map! :map company-active-map "S-<return>" #'company-complete-selection)
   (define-key company-active-map (kbd "SPC") nil))
 
-(after! dired-x
-  (setq dired-guess-shell-alist-user
-        '(("\\.pdf\\'" "zathura")
-          ("\\.djvu\\'" "zathura")
-          ("\\.jpeg\\'" "nsxiv")
-          ("\\.jpg\\'" "nsxiv")
-          ("\\.png\\'" "nsxiv")
-          ("\\.gif\\'" "nsxiv")
-          ("\\.tex\\'" "pdflatex")
-          ("\\.html?\\'" "firefox"))))
+(after! openwith
+  (use-package! openwith
+    :config
+    (add-to-list 'openwith-associations '("\\.pdf\\'" "okular" (file)))
+    (add-to-list 'openwith-associations '("\\.djvu\\'" "okular" (file)))
+    (add-to-list 'openwith-associations '("\\.html\\'" "firefox" (file)))
+    (add-to-list 'openwith-associations '("\\.jpg\\'" "nsxiv" (file)))
+    (add-to-list 'openwith-associations '("\\.jpeg\\'" "nsxiv" (file)))
+    (add-to-list 'openwith-associations '("\\.png\\'" "nsxiv" (file)))))
 
 ;;; config.el ends here

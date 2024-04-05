@@ -7,4 +7,25 @@ image/png=nsxiv.desktop
 image/webp=nsxiv.desktop
 text/plain=nvim.desktop
 
-text/plain=vim.desktop
+x-scheme-handler/http=userapp-Firefox-K7Y3I2.desktop
+x-scheme-handler/https=userapp-Firefox-K7Y3I2.desktop
+x-scheme-handler/chrome=userapp-Firefox-K7Y3I2.desktop
+text/html=userapp-Firefox-K7Y3I2.desktop
+application/x-extension-htm=userapp-Firefox-K7Y3I2.desktop
+application/x-extension-html=userapp-Firefox-K7Y3I2.desktop
+application/x-extension-shtml=userapp-Firefox-K7Y3I2.desktop
+application/xhtml+xml=userapp-Firefox-K7Y3I2.desktop
+application/x-extension-xhtml=userapp-Firefox-K7Y3I2.desktop
+application/x-extension-xht=userapp-Firefox-K7Y3I2.desktop
+
+[Added Associations]
+x-scheme-handler/http=userapp-Firefox-K7Y3I2.desktop;
+x-scheme-handler/https=userapp-Firefox-K7Y3I2.desktop;
+x-scheme-handler/chrome=userapp-Firefox-K7Y3I2.desktop;
+text/html=userapp-Firefox-K7Y3I2.desktop;
+application/x-extension-htm=userapp-Firefox-K7Y3I2.desktop;
+application/x-extension-html=userapp-Firefox-K7Y3I2.desktop;
+application/x-extension-shtml=userapp-Firefox-K7Y3I2.desktop;
+application/xhtml+xml=userapp-Firefox-K7Y3I2.desktop;
+application/x-extension-xhtml=userapp-Firefox-K7Y3I2.desktop;
+application/x-extension-xht=userapp-Firefox-K7Y3I2.desktop;
