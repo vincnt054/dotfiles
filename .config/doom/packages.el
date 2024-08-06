@@ -3,7 +3,23 @@
 
 (package! evil-escape :disable t)
 (package! doom-dashboard :disable t)
-(package! sage-shell-mode :disable t)
+
+;; Sage-shell
+(package! sage-shell-mode)
+
+;; LSP-bridge
+;; (package! lsp :disable t)
+;; (package! company :disable t)
+
+;; (when (package! lsp-bridge
+;;         :recipe (:host github
+;;                  :repo "manateelazycat/lsp-bridge"
+;;                  :branch "master"
+;;                  :files ("*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
+;;                  ;; do not perform byte compilation or native compilation for lsp-bridge
+;;                  :build (:not compile)))
+;;   (package! markdown-mode)
+;;   (package! yasnippet))
 
 (package! org-ql)
 (package! evil-org)
