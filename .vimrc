@@ -4,8 +4,6 @@ call plug#end()
 
 set history=500
 set so=7
-let $LANG='en'
-set langmenu=en
 set wildmenu
 set wildignore=*.o,*~,*.pyc
 set ruler

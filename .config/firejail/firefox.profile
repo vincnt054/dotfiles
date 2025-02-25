@@ -33,7 +33,6 @@ whitelist ${HOME}/Music
 whitelist ${HOME}/Public
 whitelist ${HOME}/Video
 whitelist ${HOME}/iso
-whitelist ${HOME}/library
 whitelist ${HOME}/projects/website
 whitelist ${HOME}/projects/codeforces
 

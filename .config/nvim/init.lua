@@ -1,10 +1,11 @@
 local Plug = vim.fn['plug#']
 
 vim.call('plug#begin', '~/.config/nvim/plugged')
-    Plug 'junegunn/fzf.vim'
-    Plug('nvim-treesitter/nvim-treesitter', { ["do"] = ':TSUpdate' })
-    Plug 'mbbill/undotree'
-    Plug 'tpope/vim-obsession'
+    Plug('junegunn/fzf', { ['do'] = '{ -> fzf#install() }' })
+    Plug('junegunn/fzf.vim')
+    Plug('mbbill/undotree')
+    Plug('nvim-treesitter/nvim-treesitter', { ['do'] = 'TSUpdate' })
+    Plug('tpope/vim-obsession')
 vim.call('plug#end')
 
 vim.opt.hlsearch = false
@@ -18,7 +19,7 @@ vim.opt.colorcolumn = "80"
 vim.opt.nu = true
 vim.opt.relativenumber = true
 
-vim.opt.clipboard=unnamedplus
+vim.opt.clipboard = unnamedplus
 
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4

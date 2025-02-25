@@ -26,51 +26,37 @@
 # Each block command defaults to the script name to avoid boilerplate.
 # Change $SCRIPT_DIR to the location of your scripts!
 command=$HOME/.config/i3blocks/scripts/$BLOCK_NAME
-separator_block_width=15
-markup=none
-
-[zypper-update]
-interval=once
-markup=pango
-WATCH=^linux.*
-UPDATE_COLOR=#FFFF85
-QUIET=true
-LABEL=
-
-[disk]
-label=/home: 
-dir=$HOME
-interval=30
-separator=false
+separator_block_width=20
 
 [disk]
 label=/: 
 DIR=/
 interval=30
-separator=true
 
 [iface]
-IFACE=eno1
-LABEL=IPv4:
-color=#91E78B
-ADDRESS_FAMILY=inet
 interval=60
+label=IP
+#color=#91E78B
+IFACE=eno1
+ADDRESS_FAMILY=inet
 
 [memory2]
+label=MEM
 interval=persist
 markup=pango
-bar_chars=_▁▂▃▄▅▆▇█
-bar_size=10
+#bar_chars=_▁▂▃▄▅▆▇█
+#bar_size=10
 critical=80
 warning=50
 color_critical=#FF7373
 color_warning=#FFA500
 
 [cpu_util_detailed]
+label=CPU
 markup=pango
-interval=-2
+interval=repeat
 #report_time=5
-#stats=usr nice sys iowait
+stats=usr sys iowait
 #format=%6.2f
 #warn=80
 #usr_color=green

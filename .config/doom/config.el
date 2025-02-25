@@ -38,8 +38,8 @@
 (setq delete-by-moving-to-trash t)
 (setq trash-directory "~/.trash")
 
-(setq org-directory "~/wiki")
-(setq org-roam-directory "~/wiki/vault")
+(setq org-directory "~/org")
+(setq org-roam-directory "~/org/vault")
 (setq org-roam-dailies-directory "daily")
 
 (add-to-list 'auto-mode-alist '("\\.service\\'" . conf-unix-mode))
@@ -80,35 +80,6 @@
 
 (after! org
   (use-package! org
-    :preface
-    (defun my/marginalia-mark-category (seq category)
-      "Add category to a completing-read for marginalia use"
-      (lambda (str pred flag)
-        (pcase flag
-          ('metadata
-           `(metadata (category . ,category)))
-          (_
-           (all-completions str seq pred)))))
-
-    (defun my/org-roam-dailies-save-to-file (title)
-      "Save to an org roam file"
-      (let* ((filename (file-truename (concat org-roam-directory org-roam-dailies-directory "/" title ".org"))))
-        (unless (file-exists-p filename)
-          (save-current-buffer
-            (set-buffer (org-capture-target-buffer filename))
-            (insert ":PROPERTIES:\n:ID:        \n:END:\n#+title: " title)
-            (goto-char 25)
-            (org-id-get-create)
-            (write-file filename)
-            (org-roam-db-update-file filename)))))
-
-    (defun my/propertize-org-task (level org-todo-keyword raw-value)
-      "Give face value to an org todo task"
-      (concat (propertize (make-string level ?*) 'face (nth (- level 1) org-level-faces))
-              " "
-              (propertize org-todo-keyword 'face (cdr (assoc org-todo-keyword org-todo-keyword-faces)))
-              " "
-              raw-value))
     :config
     (add-to-list 'org-file-apps '("\\.pdf\\'" . "zathura %s"))
     (advice-add #'org-archive-subtree-default :before
@@ -139,49 +110,30 @@
                                                  (format-time-string "%Y-%m-%d")
                                                  ".org::")))
     (org-archive-subtree-save-file-p t)
-    (org-agenda-files '("deanima.org" "inbox.org"))
-    (org-agenda-custom-commands
-     `(("r" "Readings" todo "LEGERE"
-        ((org-agenda-files '(,(expand-file-name "reading_list.org" org-directory)))
-         (org-agenda-overriding-header "Readings")
-         (org-agenda-prefix-format "\t")))))
-    (org-capture-templates
-     '(("t" "Task entry")
-       ("tt" "Task" entry
-        (function (lambda ()
-                    (let* ((choice (completing-read "Which org-agenda file? "
-                                                    (my/marginalia-mark-category (mapcar #'(lambda (file) (expand-file-name file org-directory)) org-agenda-files)
-                                                                                 'file)
-                                                    nil nil)))
-                      (set-buffer (org-capture-target-buffer choice))
-                      (goto-char (point-min)))))
-        "* %^{Task|TODO|BUG} %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
-        :prepend t)
-       ("ts" "Subtask" entry
-        (function (lambda ()
-                    (let* ((ql-queries (org-ql-select (org-agenda-files)
-                                           '(and (todo)
-                                                 (level 1))
-                                           :action 'element-with-markers
-                                           :sort 'todo))
-                           (queries (mapcar #'(lambda (query)
-                                                 (let* ((level (org-element-property :level query))
-                                                        (org-todo-keyword (org-element-property :todo-keyword query))
-                                                        (raw-value (org-element-property :raw-value query))
-                                                        (org-marker (org-element-property :org-marker query)))
-                                                   (list
-                                                    (my/propertize-org-task level org-todo-keyword raw-value)
-                                                    org-marker))) ql-queries))
-                           (choice (completing-read "Which task to subtask? " (my/marginalia-mark-category queries 'face) nil nil))
-                           (query-marker (cadr (assoc choice queries))))
-                      (set-buffer (marker-buffer query-marker))
-                      (goto-char (marker-position query-marker)))))
-        "* %^{Task|TODO|BUG} %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
-        :prepend t)
-       ("r" "Readings" entry (file "reading_list.org")
-        "* LEGERE %^{Title}\n:PROPERTIES:\n:CAPTURED: %U\n:PAGES: %^{Number of pages}\n:LINK: %^{LINK}\n:END:"
-        :empty-lines-after 1
-        :prepend t))))
+    :config
+    (setq org-publish-project-alist
+        '(
+          ("org-vincnt054.github.io"
+           ;; path to org files.
+           :base-directory "~/workspace/vincnt054.github.io/org"
+           :base-extension "org"
+           ;; path to jekyll posts
+           :publishing-directory "~/workspace/vincnt054.github.io/jekyll"
+           :recursive t
+           :publishing-function org-html-publish-to-html
+           :headline-levels 4
+           :html-extension "html"
+           :body-only t)
+
+          ("asset-vincnt054.github.io" ;; my blog project (just a name)
+           :base-directory "~/workspace/vincnt054.github.io/org"
+           :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf\\|php"
+           :publishing-directory "~/workspace/vincnt054.github.io/jekyll"
+           :recursive t
+           :publishing-function org-publish-attachment)
+
+          ("vincnt054.github.io" :components ("org-vincnt054.github.io" "asset-vincnt054.github.io"))
+          )))
 
   (use-package! org-roam
     :init
@@ -197,25 +149,7 @@
     :hook (org-mode . (lambda () evil-org-mode))
     :config
     (require 'evil-org-agenda)
-    (evil-org-agenda-set-keys))
-
-  (use-package! ox-extra
-    :config
-    (ox-extras-activate '(latex-header-blocks ignore-headlines)))
-
-  (use-package! ox-latex
-    :config
-    ;; code here will run after the package is loaded
-    (setq org-latex-pdf-process
-          '("pdflatex -interaction nonstopmode -output-directory %o %f"
-            "bibtex %b"
-            "pdflatex -interaction nonstopmode -output-directory %o %f"
-            "pdflatex -interaction nonstopmode -output-directory %o %f"))
-    (setq org-latex-with-hyperref nil) ;; stop org adding hypersetup{author..} to latex export
-    (setq org-latex-logfiles-extensions
-          (quote ("lof" "lot" "tex~" "aux" "idx" "log" "out" "toc" "nav" "snm" "vrb" "dvi" "fdb_latexmk" "blg" "brf" "fls" "entoc" "ps" "spl" "bbl" "xmpi" "run.xml" "bcf" "acn" "acr" "alg" "glg" "gls" "ist")))
-    (unless (boundp 'org-latex-classes)
-      (setq org-latex-classes nil))))
+    (evil-org-agenda-set-keys)))
 
 (after! company
   (dolist (key '("<return>" "RET"))
